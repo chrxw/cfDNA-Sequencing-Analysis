@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Dongle&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  list-style: none;
+  box-sizing: border-box;
+  font-family: 'Dongle', sans-serif;
+  /* background-color: #fffffe !important; */
+}
+
+.sidebar {
+  overflow: auto;
+  min-height: 100vh !important;
+  position: fixed;
+  /* border-right:  1px solid #E5E7EB;  */
+}
+
+/* .site-layout-background {
+  background-color: #fffffe; 
+} */
+
+.site-layout-background {
+  background-color: #fffffe;
+  font-size: 30px;
+}
+
+/* Style for Content */
+.site-layout-content {
+  background-color: #fffffe;
+}
+
+.site-bottom {
+  font-size: 60px;
+  height: 65px;
+  margin-left: 10;
+  color: #5F6C7B;
+  padding: 4px 0;
+  text-align: left;
+  border-bottom: 1px solid #E5E7EB;
+  background-color: #fffffe;
+}
+
+/* Style for Footer */
+.site-footer {
+  font-size: 30px;
+  height: 65px;
+  color: #5F6C7B;
+  padding: 12px 0;
+  text-align: center;
+  border-top: 1px solid #E5E7EB;
+  background-color: #fffffe;
+}
+
+.logo {
+  width: 50px;
+  height: auto;
+  margin-right: 10px;
+  margin-left: 90px;
+  transform: rotate(45deg);
+}
+
+.logoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+}
+
+.ant-menu-item {
+  font-size: 30px;
+  padding: 30px 30px;
+
+  color: #3DA9FC !important;
+}
+
+/* Adjust text */
+.ant-menu-item>span {
+  margin-left: 10px;
+  /* Adjust margin-left as needed */
+  margin-top: 2px;
+}
+
+/*icon */
+.ant-menu-item .anticon {
+  margin-top: 4px;
+}
+
+/* Increase the size of the icons in menu items */
+.ant-menu-item .anticon {
+  font-size: 30px !important;
+  width: 25px;
+  margin-left: 15px;
+  margin-bottom: 8px;
+  color: #3DA9FC !important;
+}
+
+
+.csa {
+  color: #094067;
+  font-size: 50px;
+  font-weight: 400;
+  margin-left: 0px;
+  margin-top: 8px;
+}
+
+.csa-fullname {
+  color: #90B4CE;
+  font-size: 30px;
+  font-weight: 400;
+  margin-top: -30px;
+  margin-left: 43px;
+}
+
+.navigation-menu {
+  margin-top: 35px;
+  /* border-right:  1px solid #E5E7EB; */
+}
+
+/* Styles for selected menu items */
+.ant-menu-item:hover {
+  background-color: rgba(61, 169, 252, 0.5) !important;
+  color: #fffffe !important;
+}
+
+.ant-menu-item:hover .anticon {
+  color: #fffffe !important;
+
+}
+
+.ant-menu-item-selected {
+  background-color: #3DA9FC !important;
+  color: #fffffe !important;
+
+}
+
+/* Styles for icons in selected menu items */
+.ant-menu-item-selected .anticon {
+  color: #fffffe !important;
+
+}
+
+
+/* .Topic {
+  margin-left: 10px;
+} */
+
+/* .menubar {
+  display: flex;
+  flex-direction: row;
+} */

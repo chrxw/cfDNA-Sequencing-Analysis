@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cfdna-sequencing-analysis",
+  "private_key_id": "b79bf8260533912eb3399d817a8a6122d11a6ac2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCVQi1kAF6rSAo0\n1UsUjb12gW6SK0I460FRQA8WTKT9LAcfzUbS6k+/lqdIOlTuLEHbv9wOGL8TcFBX\nboEk0ACmwe7PnJrChDm427JvbnAqsS/r3Xld5N9TBU6OWzqjIjB5hXnsiqlus7cJ\nyjpqm1Hm3QsHIX1h8lG8f+qlXw0hNk4im8KD9hiDom2l1sRG8P3uAua3xcNzESjx\n/CGN+DOEy0JkdWzH5u5VD+pYAVIPx0pH6+bXzb9OTJL44z/D0zfnMe9lH+/Rnrqr\nlckhVRBBp0UVi9UlW6O8qAglpNOFuY+LFMO1Sll1zN7FL0JkVQ+hjrlsGwS2DuWX\njvUGNKQvAgMBAAECggEABXi8Fj7nOYs2CJLLIlFB4U7EYWphjpmdNt/Mzcn4gGl1\nR2askn3Rd5oLvtuYknSf43DoncGte4ZyA4qDBHj1lSdl3EmG6NuVDCBNrcUUKpR9\nR73CPb1urGn048YXY7SUp1fLzO6WYH8JFjxKIO9ZtMdkqJnDMWyDL5BW50IRRqbb\nI3JMjK/QvTZ6StuKmNs5D0YYfeRUz+/0XdcSWKd55ZnkNgcgObeRFQjj2bfB9Eoq\n/fTNyX96JPmM8yL26BtnudYMgS1SwJM2xqlOgUcVUr2sUY/mpg3RuGfXR9ma9r5j\nXsE7JHK9augA64Ire7CipFWl7rsw5HwMl10hUrwm4QKBgQDN9/1xBfB+wvAXbQoD\n/XpoBM5ZiCXqBaPXxr1jMFGLagczc0EwEf9iKwWRtIPT6gNzSi7Nr8CrA8KAswlM\nMRToDnJmsy6jiiptiV3BC0rlmYHrEqyAYvOLT/6SfTP9disC16CHht+qvX1aaGr5\ncwydC2HJcTjO5A5LS8Kl1uuvoQKBgQC5g7SkZOOeAw7F9oo2QUcSGhkIJxDGzgtp\nzh88jpQ3ktLIdtedABbhL1FgubIPRXPJVrwBvD3rfEex+thm29xTOxHdfUTl/xtK\nN3fJlQtvPn8QrQS1rTSZi8UJpLk1EjyK+xoZlbwomqSsbQ9oVo0xpOcPzLtbhbb2\n9JyotLIBzwKBgF+/gwABpNUoxff95oQIV9j3Mv4H/qgVyx7J8syjb6UBuys9zvYL\nx87Y9RPQ+N+Qj94OhEd2Bnj5nHe7wvy6bF+cJ656aZn45tRY4U6Wc1Dc1bpzyeE9\nHr6Kh2uN7JdNUZ1Wo/ecyWlUAWv/0or34ss2uVSt35y+A68ZHvl9Ob9BAoGAaCQN\nZjPUq0FgK7VIxUhD01+fKbp0aoYEVjMFygLoJYJgnXRJebMxJNxhPIFB+dytMRtl\nkzvPLsCnprwAe011E6wXTVUjNlHNSg51Sk5HCv30arIV8L74xjF2PQGhjq9cGVD4\nx+AMrmaRhtH6UkI0JOhDZdUyYCBiI6QRxYsaWnUCgYEAjFRICDBHwJQkAfvM2kqA\nNDgP6MjlfA4uegBiCWyNhYUo0ppYdGWVPNCCsBXRy2CUdeV5TltlR3ZvYy5GKBqK\nmSgBSjwvZXAL/LyzqXYWmW1OW0JdzobeS1I37Jp+S2zfTY82xMGFGx97OrtS2LKt\nhcjRTK1fjiWUG6Itj2Z0smc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "schrwan@cfdna-sequencing-analysis.iam.gserviceaccount.com",
+  "client_id": "101084738303066330259",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/schrwan%40cfdna-sequencing-analysis.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
