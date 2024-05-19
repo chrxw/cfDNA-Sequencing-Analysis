@@ -1,0 +1,5 @@
+name: quality_control
+channels:
+  - bioconda
+dependencies:
+  - fastqc

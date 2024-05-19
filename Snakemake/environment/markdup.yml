@@ -1,0 +1,5 @@
+name: mark_duplicate
+channels:
+  - bioconda
+dependencies:
+  - picard

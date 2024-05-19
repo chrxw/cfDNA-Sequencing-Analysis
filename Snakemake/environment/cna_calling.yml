@@ -1,0 +1,6 @@
+name: cnv_calling
+channels:
+  - bioconda
+dependencies:
+  - hmmcopy
+  - r-ichorcna=0.2.0

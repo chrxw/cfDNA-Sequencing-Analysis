@@ -1,32 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
-
 # Create your models here.
-
-## User
-
-class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_login = models.DateTimeField(auto_now=True)
-
-    groups = models.ManyToManyField(
-        'auth.Group',
-        through='auth.UserGroup',
-        related_name='api_users',  # Custom related_name for groups
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='api_users',  # Custom related_name for permissions
-    )
-
-    def __str__(self):
-        return self.username
-
-
 
 ## Data
 
@@ -94,7 +70,6 @@ class History(models.Model):
     tool = models.ForeignKey(BioinformaticsTool, on_delete=models.CASCADE)
     input_data = models.ForeignKey(UploadData, on_delete=models.CASCADE)
     process_file_path = models.CharField(max_length=1024, blank=True)
-    log_file = models.CharField(max_length=1024, blank=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

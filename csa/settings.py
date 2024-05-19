@@ -76,8 +76,8 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': '/cloudsql/cfdna-sequencing-analysis:asia-southeast1:csa-db',
-        'PORT': '',
+        'HOST': '34.124.230.188',
+        'PORT': '5432',
         'NAME': 'csa-db',
         'USER': 'postgres',
         'PASSWORD': '301295Kv*',

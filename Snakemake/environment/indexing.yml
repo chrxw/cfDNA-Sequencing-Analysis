@@ -1,0 +1,5 @@
+name: indexing
+channels:
+  - bioconda
+dependencies:
+  - samtools
