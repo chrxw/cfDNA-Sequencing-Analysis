@@ -1,158 +1,145 @@
-import React from "react";
-import Cookies from "universal-cookie";
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { Layout, Menu } from 'antd';
+import { HomeOutlined, UploadOutlined, FunnelPlotOutlined, DashboardOutlined, HistoryOutlined, SettingOutlined } from '@ant-design/icons';
+import logoSrc from './assets/Logo.png';
 
-//instantiating Cookies class by creating cookies object
-const cookies = new Cookies();
+import './App.css';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+// Import your pages/components
+import HomePage from './HomePage';
+// import UploadPage from './UploadPage';
+import AnalysisCenter from './AnalysisCenter';
+import DashboardPage from './DashboardPage';
+import HistoryPage from './HistoryPage';
+import SettingsPage from './SettingsPage';
+import CancerPredictionPage from './CancerPredictionPage';
+import QualityControlPage from './QualityControlPage';
+import MappingPage from './MappingPage';
+import SortingPage from './SortingPage';
+import MarkDuplicatesPage from './MarkDuplicatesPage';
+import IndexingPage from './IndexingPage';
+import CNVCallingPage from './CNVCallingPage';
 
-    this.state = {
-      username: "",
-      password: "",
-      error: "",
-      isAuthenticated: false,
-    };
-  }
+const { Header, Content, Footer, Sider } = Layout;
 
-  componentDidMount = () => {
-    this.getSession();
-  }
+function App() {
+  const [selectedMenuKey, setSelectedMenuKey] = useState('1'); // State to track the selected menu item
+  const [headerName, setHeaderName] = useState('Home'); // State to track the header name
 
-// Get Session Method
-  getSession = () => {
-    //// Make a GET request to the "/api/session/" URL with "same-origin" credentials
-    fetch("/api/session/", {
-      credentials: "same-origin",
-    })
-    .then((res) => res.json()) //// Parse the response as JSON
-    .then((data) => {
-      console.log(data); // Log the response data to the console
-      //// If the response indicates the user is authenticated
-      if (data.isAuthenticated) {
-        this.setState({isAuthenticated: true}); // Update the component's state
-      } else {  // If the response indicates the user is not authenticated
-        this.setState({isAuthenticated: false}); // Update the component's state
-      }
-    })
-      //// Handle any errors that occurred during the fetch
-    .catch((err) => {
-      console.log(err);
-    });
-  }
-  
-//Who Am I method
-  whoami = () => {
-    fetch("/api/whoami/", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "same-origin",
-    })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("You are logged in as: " + data.username);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }
-
-  handlePasswordChange = (event) => {
-    this.setState({password: event.target.value});
-  }
-
-  handleUserNameChange = (event) => {
-    this.setState({username: event.target.value});
-  }
-
-  isResponseOk(response) {
-    if (response.status >= 200 && response.status <= 299) {
-      return response.json();
-    } else {
-      throw Error(response.statusText);
+  const handleMenuClick = (event) => {
+    setSelectedMenuKey(event.key); // Update the selected menu item key
+    // Update the header name based on the selected menu item
+    switch (event.key) {
+      case '1':
+        setHeaderName('Home');
+        break;
+      // case '2':
+      //   setHeaderName('Upload Data');
+      //   break;
+      case '3':
+        setHeaderName('Analysis Center');
+        break;
+      case '4':
+        setHeaderName('Dashboard');
+        break;
+      case '5':
+        setHeaderName('History');
+        break;
+      case '6':
+        setHeaderName('Setting');
+        break;
+      default:
+        setHeaderName('Home');
+        break;
     }
-  }
-
-  //Login Mthod
-  login = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-     // Make a POST request to the "/api/login/" URL with the form data
-    fetch("/api/login/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": cookies.get("csrftoken"),
-      },
-      credentials: "same-origin",
-      body: JSON.stringify({username: this.state.username, password: this.state.password}),
-    })
-    .then(this.isResponseOk)
-    .then((data) => {
-      console.log(data);
-      this.setState({isAuthenticated: true, username: "", password: "", error: ""});
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({error: "Wrong username or password."});
-    });
-  }
-
-  //Logout Method
-  logout = () => {
-    fetch("/api/logout", {
-      credentials: "same-origin",
-    })
-    .then(this.isResponseOk)
-    .then((data) => {
-      console.log(data);
-      this.setState({isAuthenticated: false});
-    })
-    .catch((err) => {
-      console.log(err);
-    });
   };
 
+  return (
+    <Router>
+      <Layout>
+        <Sider
+          width={330}
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed', left: 0, top: 0, bottom: 0,
+            background: '#fffffe',
+            borderRight: '1px solid #E5E7EB'
+          }}
+        >
+          {/* Logo */}
+          <div className="logoContainer">
+            <img src={logoSrc} alt="Logo" className="logo" />
+            <h1 className="csa">CSA</h1>
+          </div>
 
-  // UI Rendering using bootstrap 
-  render() {
-    if (!this.state.isAuthenticated) {
-      return (
-        <div className="container mt-3">
-          <h1>React Cookie Auth</h1>
-          <br />
-          <h2>Login</h2>
-          <form onSubmit={this.login}>
-            <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <input type="text" className="form-control" id="username" name="username" value={this.state.username} onChange={this.handleUserNameChange} />
+          {/* cfDNA Sequencing Analysis */}
+          <div className="cfDNA">
+            <h1 className="csa-fullname">cfDNA Sequencing Analysis</h1>
+          </div>
+
+          {/* Navigation Menu */}
+          <Menu
+            className="navigation-menu"
+            mode="inline"
+            selectedKeys={[selectedMenuKey]}
+            onClick={handleMenuClick}
+            style={{ height: '82%', display: 'flex', flexDirection: 'column', borderRight: 'none' }}
+          >
+            <Menu.Item key="1" icon={<HomeOutlined />}>
+              <Link to="/">Home</Link>
+            </Menu.Item>
+            {/* <Menu.Item key="2" icon={<UploadOutlined />}>
+              <Link to="/upload">Upload Data</Link>
+            </Menu.Item> */}
+            <Menu.Item key="3" icon={<FunnelPlotOutlined />}>
+              <Link to="/Analysis">Analysis Center</Link>
+            </Menu.Item>
+            <Menu.Item key="4" icon={<DashboardOutlined />}>
+              <Link to="/Dashboard">Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item key="5" icon={<HistoryOutlined />}>
+              <Link to="/History">History</Link>
+            </Menu.Item>
+            <div style={{ flexGrow: 1 }}></div>
+            <Menu.Item key="6" icon={<SettingOutlined />}>
+              <Link to="/Settings">Setting</Link>
+            </Menu.Item>
+          </Menu>
+
+        </Sider>
+
+        <Layout className="site-layout" style={{ marginLeft: 330, paddingLeft: 40, background: '#fffffe' }}>
+          <Header className="site-bottom">
+            {headerName}
+          </Header>
+          <Content>
+            <div className="site-layout-background" style={{ padding: 0, minHeight: 790 }}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                {/* <Route path="/upload" element={<UploadPage />} /> */}
+                <Route path="/Analysis" element={<AnalysisCenter />} />
+                <Route path="/Dashboard" element={<DashboardPage />} />
+                <Route path="/History" element={<HistoryPage />} />
+                <Route path="/Settings" element={<SettingsPage />} />
+                <Route path="/CancerPrediction" element={<CancerPredictionPage />} />
+                <Route path="/QualityControl" element={<QualityControlPage />} />
+                <Route path="/Mapping" element={<MappingPage />} />
+                <Route path="/Sorting" element={<SortingPage />} />
+                <Route path="/MarkDuplicates" element={<MarkDuplicatesPage />} />
+                <Route path="/Indexing" element={<IndexingPage />} />
+                <Route path="/CNVCalling" element={<CNVCallingPage />} />
+              </Routes>
             </div>
-            <div className="form-group">
-              <label htmlFor="username">Password</label>
-              <input type="password" className="form-control" id="password" name="password" value={this.state.password} onChange={this.handlePasswordChange} />
-              <div>
-                {this.state.error &&
-                  <small className="text-danger">
-                    {this.state.error}
-                  </small>
-                }
-              </div>
-            </div>
-            <button type="submit" className="btn btn-primary">Login</button>
-          </form>
-        </div>
-      );
-    }
-    return (
-      <div className="container mt-3">
-        <h1>React Cookie Auth</h1>
-        <p>You are logged in!</p>
-        <button className="btn btn-primary mr-2" onClick={this.whoami}>WhoAmI</button>
-        <button className="btn btn-danger" onClick={this.logout}>Log out</button>
-      </div>
-    )
-  }
+          </Content>
+          <Footer className="site-footer">
+            cfDNA Sequencing Analysis ©2024 Created by No22-HDS
+          </Footer>
+        </Layout>
+      </Layout>
+    </Router>
+  );
 }
 
 export default App;

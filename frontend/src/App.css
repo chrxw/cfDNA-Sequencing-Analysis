@@ -142,6 +142,21 @@
 
 }
 
+.custom-select {
+  position: relative;
+}
+
+.custom-select::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 7px;
+  border: 1px solid #094067;
+  pointer-events: none; /* Ensure the border doesn't interfere with the select functionality */
+}
 
 /* .Topic {
   margin-left: 10px;

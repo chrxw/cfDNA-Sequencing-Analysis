@@ -13,19 +13,16 @@ class BioinformaticsToolSerializer(serializers.ModelSerializer):
         model = BioinformaticsTool
         fields = '__all__'
 
-
-class UploadDataSerializer(serializers.ModelSerializer):
-    project_data = ProjectDataSerializer()
-    bioinformatics_tool = BioinformaticsToolSerializer()
-
-    class Meta:
-        model = UploadData
-        fields = '__all__'
-
-
 class HistorySerializer(serializers.ModelSerializer):
-    upload_data = UploadDataSerializer()
-
     class Meta:
         model = History
         fields = '__all__'
+
+
+# class UploadDataSerializer(serializers.ModelSerializer):
+#     project_data = ProjectDataSerializer()
+#     bioinformatics_tool = BioinformaticsToolSerializer()
+
+#     class Meta:
+#         model = UploadData
+#         fields = '__all__'

@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+
+// image imports
 import Lowgrade from './assets/Lowgrade.png';
 import Ependymoma from './assets/Ependymoma.png';
 import Medulloblastoma from './assets/Medulloblastoma.png';
@@ -10,18 +13,17 @@ import Nonmalignant from './assets/Nonmalignant.png';
 import Meningioma from './assets/Meningioma.png';
 import Atypicalteratoid from './assets/Atypicalteratoid.png';
 
-// Define styled components for the topic
+// Define styled components
 const StyledTopicContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-top: 50px; /* Add margin between topic */
+    margin-top: 50px;
 `;
 
 const StyledTopic = styled.div`
     font-family: 'Dongle', sans-serif;
     color: #5F6C7B;
-    // font-weight: 400;
 `;
 
 const StyledHeader = styled.h1`
@@ -50,6 +52,51 @@ const ImageName = styled.p`
     margin-left: 10px;
 `;
 
+const BarContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+`;
+
+const Bar = styled.div`
+    width: 10px;
+    height: 20px;
+    background-color: ${props => props.isFilled ? '#EF4565' : '#E5E7EB'};
+    margin-right: 2px;
+    margin-bottom: 2px;
+`;
+
+const BarRow = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+`;
+
+const EntityName = styled.p`
+    margin-left: 35px;
+`;
+
+function DataBar({ entity, count, maxCount }) {
+    const barsPerRow = 70;
+    const totalBars = count > barsPerRow ? Math.max(maxCount, barsPerRow) : barsPerRow;
+    const filledBars = Array.from({ length: count }).map((_, i) => <Bar key={`filled-${i}`} isFilled={true} />);
+    const emptyBars = Array.from({ length: totalBars - count }).map((_, i) => <Bar key={`empty-${i}`} isFilled={false} />);
+    
+    const allBars = [...filledBars, ...emptyBars];
+    
+    const barRows = [];
+    for (let i = 0; i < Math.ceil(allBars.length / barsPerRow); i++) {
+        barRows.push(
+            <BarRow key={i}>
+                {allBars.slice(i * barsPerRow, (i + 1) * barsPerRow)}
+                {i === 0 && <EntityName>{entity}</EntityName>}
+            </BarRow>
+        );
+    }
+
+    return <div>{barRows}</div>;
+}
+
 function Topic({ title, children }) {
     return (
         <StyledTopic>
@@ -60,6 +107,29 @@ function Topic({ title, children }) {
 }
 
 function HomePage({ headerName }) {
+    const [counts, setCounts] = useState({ total: 0, control: 0, positive: 0 });
+    const [tumorEntities, setTumorEntities] = useState([]);
+
+    useEffect(() => {
+        axios.get('/api/project-data/')
+            .then(response => {
+                const fetchedData = response.data;
+                setCounts({
+                    total: fetchedData.total_samples,
+                    control: fetchedData.control_samples,
+                    positive: fetchedData.positive_samples
+                });
+
+                setTumorEntities(fetchedData.tumor_entities.map(item => ({
+                    entity: item.entity_type,
+                    count: item.count
+                })));
+            })
+            .catch(error => console.error('Error fetching project data:', error));
+    }, []);
+
+    const maxCount = Math.max(...tumorEntities.map(e => e.count), 70);
+
     return (
         <div style={{ paddingLeft: 40, paddingRight: 40, paddingBottom: 40 }}>
             <StyledHeader>{headerName}</StyledHeader>
@@ -69,8 +139,8 @@ function HomePage({ headerName }) {
                 </Topic>
             </StyledTopicContainer>
             <StyledTopicContainer>
-                <Topic title="123 Sample">
-                    Control 10 Samples<br />Positive 113 Samples
+                <Topic title={`${counts.total} Samples`}>
+                    Control {counts.control} Samples<br />Positive {counts.positive} Samples
                 </Topic>
                 <StyledTopic>
                     <StyledHeader>9 Diagnosis Groups</StyledHeader>
@@ -116,7 +186,11 @@ function HomePage({ headerName }) {
             </StyledTopicContainer>
             <StyledTopicContainer>
                 <Topic title="5 Tumor Entities">
-                Brain cancer<br />Sarcoma cancer<br />Neuroblastoma<br />Hematolgical malignancies<br />other
+                    <div>
+                        {tumorEntities.map(entity => (
+                            <DataBar key={entity.entity} entity={entity.entity} count={entity.count} maxCount={maxCount} />
+                        ))}
+                    </div>
                 </Topic>
             </StyledTopicContainer>
         </div>

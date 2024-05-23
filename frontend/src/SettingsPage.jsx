@@ -1,11 +1,11 @@
- //SettingsPage.jsx
+//  SettingsPage.jsx
 import React from 'react';
 
 function SettingsPage() {
     return (
         <div>
-            {/* <h2>Home Page</h2> */}
-            <p>Setting Page!</p>
+            <h2>Help me pls</h2>
+            <p>Welcome!</p>
         </div>
     );
 }

@@ -1,11 +1,11 @@
-// DashboardPage.jsx
+// HistoryPage.jsx
 import React from 'react';
 
 function HistoryPage() {
     return (
         <div>
             <h2>Help me pls</h2>
-            {/* <p>Welcome!</p> */}
+            <p>Welcome!</p>
         </div>
     );
 }

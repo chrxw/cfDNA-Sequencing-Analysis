@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import os
 from google.oauth2 import service_account
 
@@ -26,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
-    'storages'
+    'storages',
 ]
 
 MIDDLEWARE = [

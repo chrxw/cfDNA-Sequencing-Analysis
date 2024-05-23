@@ -89,7 +89,7 @@ function AnalysisCenter() {
                 {/* Core tools */}
                 <ToolContainer>
                     {/* Use Link instead of a regular button */}
-                    <Link to="/cancer-prediction">
+                    <Link to="/CancerPrediction">
                         <StyledButton type="primary">
                             <ToolImage src={dnatest} alt="DNA Test" />
                             <ButtonTextWrapper>
@@ -106,7 +106,7 @@ function AnalysisCenter() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 480px)', columnGap: '2px', rowGap: '2px' }}>
                     {/* Analysis tools */}
                     <ToolContainer>
-                    <Link to="/QualityControlPage">
+                    <Link to="/QualityControl">
                         <StyledButton type="primary">
                             <ToolImage src={qualitycontrol} alt="Quality Control" />
                             <ButtonTextWrapper>
@@ -117,7 +117,7 @@ function AnalysisCenter() {
                         </Link>
                     </ToolContainer>
                     <ToolContainer>
-                    <Link to="/MappingPage">
+                    <Link to="/Mapping">
                         <StyledButton type="primary">
                             <ToolImage src={molecular} alt="Molecular" />
                             <ButtonTextWrapper>
@@ -128,7 +128,7 @@ function AnalysisCenter() {
                         </Link>
                     </ToolContainer>
                     <ToolContainer>
-                    <Link to="/SortingPage">
+                    <Link to="/Sorting">
                         <StyledButton type="primary">
                             <ToolImage src={sortdescending} alt="Sort Descending" />
                             <ButtonTextWrapper>
@@ -139,7 +139,7 @@ function AnalysisCenter() {
                         </Link>
                     </ToolContainer>
                     <ToolContainer>
-                    <Link to="/MarkDuplicatesPage">
+                    <Link to="/MarkDuplicates">
                         <StyledButton type="primary">
                             <ToolImage src={duplicate} alt="Duplicate" />
                             <ButtonTextWrapper>
@@ -150,7 +150,7 @@ function AnalysisCenter() {
                         </Link>
                     </ToolContainer>
                     <ToolContainer>
-                    <Link to="/IndexingPage">
+                    <Link to="/Indexing">
                         <StyledButton type="primary">
                             <ToolImage src={menu} alt="Menu" />
                             <ButtonTextWrapper>
@@ -161,7 +161,7 @@ function AnalysisCenter() {
                         </Link>
                     </ToolContainer>
                     <ToolContainer>
-                    <Link to="/CNVCallingPage">
+                    <Link to="/CNVCalling">
                         <StyledButton type="primary">
                             <ToolImage src={dna} alt="DNA" />
                             <ButtonTextWrapper>

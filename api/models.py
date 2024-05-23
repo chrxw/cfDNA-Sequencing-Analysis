@@ -41,6 +41,7 @@ class BioinformaticsTool(models.Model):
         RegexValidator(regex=r'^tl\d{3}$', message='ToolID must start with tl followed by 3 digits')
     ])
     tool_name = models.CharField(max_length=255)
+    package_name = models.CharField(max_length=255, null=True)
     tool_description = models.TextField(blank=True)
     tool_version = models.CharField(max_length=255)
 
