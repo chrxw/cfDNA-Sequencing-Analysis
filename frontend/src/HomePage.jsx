@@ -81,9 +81,9 @@ function DataBar({ entity, count, maxCount }) {
     const totalBars = count > barsPerRow ? Math.max(maxCount, barsPerRow) : barsPerRow;
     const filledBars = Array.from({ length: count }).map((_, i) => <Bar key={`filled-${i}`} isFilled={true} />);
     const emptyBars = Array.from({ length: totalBars - count }).map((_, i) => <Bar key={`empty-${i}`} isFilled={false} />);
-    
+
     const allBars = [...filledBars, ...emptyBars];
-    
+
     const barRows = [];
     for (let i = 0; i < Math.ceil(allBars.length / barsPerRow); i++) {
         barRows.push(

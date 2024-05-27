@@ -158,6 +158,42 @@
   pointer-events: none; /* Ensure the border doesn't interfere with the select functionality */
 }
 
+.custom-popconfirm .ant-popover-inner {
+  padding-right: 30px; /* Adjust padding as needed */
+}
+
+
+.custom-popconfirm .ant-popover-inner-content {
+  padding-left: 8px;
+  padding-top: 3px;
+ 
+  font-size: 24px !important; /* เพิ่มขนาดของกล่องยืนยันลบ */
+}
+
+/* ปุ่ม yes no  */
+.custom-popconfirm  .ant-btn-default {
+  padding: 0px;
+  font-size: 18px !important;
+  margin-bottom: 10px !important;
+  padding-top: -70px;
+  padding-bottom: 35px;
+  padding-left: 13px;
+  padding-right: 13px;
+}
+
+.custom-popconfirm  .ant-btn-primary {
+  padding: 0px;
+  font-size: 18px !important;
+  margin-bottom: 10px !important;
+  padding-top: -70px;
+  padding-bottom: 35px;
+  padding-left: 13px;
+  padding-right: 13px;
+  background-color: #EF4565 !important;
+}
+
+
+
 /* .Topic {
   margin-left: 10px;
 } */
@@ -166,3 +202,4 @@
   display: flex;
   flex-direction: row;
 } */
+

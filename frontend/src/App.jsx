@@ -20,6 +20,7 @@ import SortingPage from './SortingPage';
 import MarkDuplicatesPage from './MarkDuplicatesPage';
 import IndexingPage from './IndexingPage';
 import CNVCallingPage from './CNVCallingPage';
+import HistoryPage2 from './HistoryPage2';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -102,10 +103,10 @@ function App() {
             <Menu.Item key="5" icon={<HistoryOutlined />}>
               <Link to="/History">History</Link>
             </Menu.Item>
-            <div style={{ flexGrow: 1 }}></div>
+            {/* <div style={{ flexGrow: 1 }}></div>
             <Menu.Item key="6" icon={<SettingOutlined />}>
               <Link to="/Settings">Setting</Link>
-            </Menu.Item>
+            </Menu.Item> */}
           </Menu>
 
         </Sider>
@@ -130,6 +131,7 @@ function App() {
                 <Route path="/MarkDuplicates" element={<MarkDuplicatesPage />} />
                 <Route path="/Indexing" element={<IndexingPage />} />
                 <Route path="/CNVCalling" element={<CNVCallingPage />} />
+                <Route path="/HistoryPage2" element={<HistoryPage2 />} />
               </Routes>
             </div>
           </Content>

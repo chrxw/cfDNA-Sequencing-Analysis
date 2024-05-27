@@ -25,16 +25,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ProjectData',
-            fields=[
-                ('sample_id', models.CharField(max_length=10, primary_key=True, serialize=False, validators=[django.core.validators.RegexValidator(message='SampleID must start with sp followed by 3 digits', regex='^sp\\d{3}$')])),
-                ('sample_name', models.CharField(max_length=255)),
-                ('sample_type', models.CharField(max_length=255)),
-                ('diagnosis_group', models.CharField(max_length=255)),
-                ('entity_type', models.CharField(max_length=255)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Status',
             fields=[
                 ('status_id', models.CharField(max_length=10, primary_key=True, serialize=False, validators=[django.core.validators.RegexValidator(message='StatusID must start with st followed by 3 digits', regex='^st\\d{3}$')])),
@@ -50,19 +40,6 @@ class Migration(migrations.Migration):
                 ('file_path', models.CharField(blank=True, max_length=1024)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='History',
-            fields=[
-                ('history_id', models.CharField(max_length=10, primary_key=True, serialize=False, validators=[django.core.validators.RegexValidator(message='HistoryID must start with ht followed by 3 digits', regex='^ht\\d{3}$')])),
-                ('history_name', models.CharField(max_length=255)),
-                ('process_file_path', models.CharField(blank=True, max_length=1024)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('tool', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.bioinformaticstool')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('status', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.status')),
-                ('input_data', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.uploaddata')),
             ],
         ),
     ]

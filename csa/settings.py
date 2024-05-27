@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'rest_framework',
     'storages',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -38,7 +39,23 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
+CORS_ALLOW_HEADERS = ['Authorization', 'Content-Type']
+
 
 ROOT_URLCONF = 'csa.urls'
 
@@ -63,6 +80,8 @@ WSGI_APPLICATION = 'csa.wsgi.application'
 
 # Cloud Storage settings
 
+from google.cloud import storage
+
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_DEFAULT_ACL = 'publicRead'
 GS_PROJECT_ID = 'cfdna-sequencing-analysis'
@@ -70,7 +89,7 @@ GS_BUCKET_NAME = 'csa_upload'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     os.path.join(BASE_DIR, 'cfdna-sequencing-analysis-b79bf8260533.json')
 )
-
+client = storage.Client(project='cfdna-sequencing-analysis')
 
 # Database
 

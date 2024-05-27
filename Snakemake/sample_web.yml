@@ -1,0 +1,8 @@
+samples_config:
+  workflow_name: 'test_flow'
+  PATIENTS: '1LB-008P-01'
+  PLASMAS: 'plasma-01'
+  SAMPLES: ['1LB-008P-01']
+  PAIRED: ['R1', 'R2']
+  directory_fastq: '/home/chrwan_ja/input'
+  directory_output: '/home/chrwan_ja/output'
