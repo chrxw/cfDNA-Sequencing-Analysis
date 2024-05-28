@@ -129,7 +129,10 @@ function HistoryPage() {
     const handleBoxTitleClick = (historyId) => {
         axios.get(`/api/display_history/${historyId}/`)
             .then(response => {
-                navigate(`/History2?history_id=${historyId}`);
+                console.log('Response:', response.data); // Log the response data
+                const historyData = response.data.history_data;
+                // Navigate to HistoryPage2 with historyData as state
+                navigate('/HistoryPage2', { state: { historyData } });
             })
             .catch(error => {
                 console.error('Error fetching history data:', error);

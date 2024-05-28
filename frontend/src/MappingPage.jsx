@@ -148,9 +148,6 @@ const DeleteButton = styled.button`
 
 function MappingPage() {
     const [sampleName, setSampleName] = useState('');
-    const [sampleType, setSampleType] = useState('');
-    const [diagnosisGroup, setDiagnosisGroup] = useState('');
-    const [entityType, setEntityType] = useState('');
     const [fileList, setFileList] = useState([]);
     const [firstSetFileName, setFirstSetFileName] = useState('');
     const [secondSetFileName, setSecondSetFileName] = useState('');
@@ -197,9 +194,6 @@ function MappingPage() {
   
         const response = await axios.post('http://localhost:8000/api/create-project-data/', {
           sample_name: sampleName,
-          sample_type: sampleType,
-          diagnosis_group: diagnosisGroup,
-          entity_type: entityType
         });
   
         if (response.data.status === 'success') {

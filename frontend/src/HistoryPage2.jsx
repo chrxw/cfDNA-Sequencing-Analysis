@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import { EditOutlined, DeleteOutlined,DownloadOutlined  } from '@ant-design/icons';
 import './App.css';
@@ -353,15 +353,36 @@ const cancel = (e) => {
     message.error('Cancel Delete');
 };
 
-function HistoryPage2() {
+function HistoryPage2(props) {
+    // Destructure the props object to access location
+    const { location } = props;
+
+    // Check if location.state exists and contains historyData
+    if (!location || !location.state || !location.state.historyData) {
+        return <div>No history data available.</div>;
+    }
+
+    // Check if historyData exists
+    if (!historyData) {
+        return <div style={{color: '#5F6C7B',
+            fontSize: '35px',
+            fontFamily: 'Dongle',
+            fontWeight: '300',
+            wordWrap: 'break-word',
+            marginTop: '20px',
+            marginLeft: '430px'}}>No history data available.</div>;
+    }
+
+    const { historyData } = location.state;
+
     return (
         <Container>
            
                 <ContentContainer>
                     <RightContainer>
-                        <Title>MhongYuuPowerGirl</Title>
-                        <RightText>cfDNA Sequencing Analysis</RightText>
-                        <DateText>27 May 2024</DateText>
+                        <Title>{historyData.sample_name}</Title>
+                        <RightText>{historyData.tool}</RightText>
+                        <DateText>{historyData.transaction_date}</DateText>
 
                         {/* running status */}
                         <StatusContainer>
