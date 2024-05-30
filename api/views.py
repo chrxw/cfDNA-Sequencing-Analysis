@@ -314,30 +314,7 @@ def list_files(bucket_name, prefix):
     file_paths = [blob.name for blob in blobs if not blob.name.endswith('/')]
     return file_paths
 
-# @csrf_exempt
-# def list_input_files_view(request, sample_name):
-#     """List input files in gs://csa_upload/Data/{sample_name} without subdirectories."""
-#     try:
-#         bucket_name = 'csa_upload'
-#         prefix = f'Data/{sample_name}/'
-#         files = list_files(bucket_name, prefix)
-#         input_files = [file for file in files if '/' not in file[len(prefix):]]
-#         return JsonResponse({'status': 'success', 'files': input_files})
-#     except Exception as e:
-#         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
-# @csrf_exempt
-# def list_output_files_view(request, sample_name):
-#     """List all files in gs://csa_upload/Data/{sample_name}/output, including subdirectories."""
-#     try:
-#         bucket_name = 'csa_upload'
-#         prefix = f'Data/{sample_name}/output/'
-#         output_files = list_files(bucket_name, prefix)
-#         return JsonResponse({'status': 'success', 'files': output_files})
-#     except Exception as e:
-#         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
-
+### History detail
 @csrf_exempt
 def display_history(request, history_id):
     if request.method == 'GET':

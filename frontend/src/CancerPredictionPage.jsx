@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Select, Upload, Button, Divider, message, Form, Row, Col } from 'antd';
+import { Select, Upload, Button, Divider } from 'antd';
 import { UploadOutlined, CaretRightOutlined, CloseCircleFilled } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -146,6 +146,14 @@ const DeleteButton = styled.button`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: #ef4565;
+  font-size: 20px;
+  font-family: Dongle;
+  font-weight: 400;
+  margin-top: 5px;
+`;
+
 
 function CancerPredictionPage() {
   const [sampleName, setSampleName] = useState('');
@@ -154,7 +162,14 @@ function CancerPredictionPage() {
   const [entityType, setEntityType] = useState('');
   const [firstSetFileName, setFirstSetFileName] = useState('');
   const [secondSetFileName, setSecondSetFileName] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   const hasErrors = Object.values(errors).some(error => error);
+  //   const isFormValid = sampleName && sampleType && diagnosisGroup && entityType && firstSetFileName && secondSetFileName;
+  //   setFormValid(isFormValid && !hasErrors);
+  // }, [sampleName, sampleType, diagnosisGroup, entityType, firstSetFileName, secondSetFileName, errors]);
 
 
   const handleDeleteFile = (uid) => {
@@ -165,9 +180,26 @@ function CancerPredictionPage() {
     }
   };
 
+  const validateFields = () => {
+    const newErrors = {};
+
+    if (!sampleName) newErrors.sampleName = 'The field must not be empty';
+    if (!firstSetFileName) newErrors.firstSetFileName = 'The field must not be empty';
+    if (!secondSetFileName) newErrors.secondSetFileName = 'The field must not be empty';
+    if (!sampleType) newErrors.sampleType = 'The field must not be empty';
+    if (!diagnosisGroup) newErrors.diagnosisGroup = 'The field must not be empty';
+    if (!entityType) newErrors.entityType = 'The field must not be empty';
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Run tool button
   const handleRunTool = async (event) => {
     event.preventDefault();
+
+    if (!validateFields()) return;
 
     const formData = new FormData();
     formData.append('sample_name', sampleName);
@@ -180,7 +212,7 @@ function CancerPredictionPage() {
       });
 
       // Create new project data
-      const response = await axios.post('/api/create-project-data/', {
+      const response = await axios.post('/api/create-project-data-view/', {
         sample_name: sampleName,
         sample_type: sampleType,
         diagnosis_group: diagnosisGroup,
@@ -189,12 +221,12 @@ function CancerPredictionPage() {
 
       if (response.data.status === 'success') {
         alert(`Data saved successfully with sample_id: ${response.data.sample_id}`);
-        navigate('/History');
+        // navigate('/History2');
 
         // Trigger the bioinformatics pipeline after navigating to History page
-        await axios.post('/api/trigger-pipeline/', {
-          sample_name: sampleName,
-          history_id: response.data.history_id });
+        // await axios.post('/api/trigger-pipeline/', {
+        //   sample_name: sampleName,
+        //   history_id: response.data.history_id });
       } else {
         alert('Failed to save data');
       }
@@ -221,54 +253,44 @@ function CancerPredictionPage() {
           value={sampleName}
           onChange={(e) => setSampleName(e.target.value)}
         />
+        {errors.sampleName && <ErrorMessage>{errors.sampleName}</ErrorMessage>}
       </BoxContainer>
 
       {/* Select first set of reads */}
       <BoxContainer>
         <Label>Select first set of reads</Label>
         <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
-          {/* <Box>
+          <Box>
             <StyledText>{firstSetFileName || 'No file selected'}</StyledText>
             {firstSetFileName && (
               <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
             )}
-          </Box> */}
+          </Box>
           <Upload
             accept = '.fastq, .fastq.gz'
             maxCount= {1}
+            showUploadList = {false}
             beforeUpload = {file => {
               setFirstSetFileName(file.name);
               formData.append('files', file);
               return false
             }}
           >
-            <Row>
-              <Col flex={2}>
-                <Box>
-                  <StyledText>{firstSetFileName || 'No file selected'}</StyledText>
-                  {firstSetFileName && (
-                    <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
-                  )}
-                </Box>
-              </Col>
-              <Col flex={3}>
-                <UploadOutlined
-                  style={{
-                    fontSize: '20px',
-                    marginTop: '4px',
-                    marginLeft: '20px',
-                    padding: '9px',
-                    color: '#fffffe',
-                    backgroundColor: '#3DA9FC',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                  }}
-                />
-              </Col>
-            </Row>
-            
+            <UploadOutlined
+              style={{
+                fontSize: '20px',
+                marginTop: '4px',
+                marginLeft: '20px',
+                padding: '9px',
+                color: '#fffffe',
+                backgroundColor: '#3DA9FC',
+                borderRadius: '10px',
+                cursor: 'pointer',
+              }}
+            />
           </Upload>
         </UploadContainer>
+        {errors.firstSetFileName && <ErrorMessage>{errors.firstSetFileName}</ErrorMessage>}
       </BoxContainer>
 
       {/* Select second set of reads */}
@@ -283,7 +305,8 @@ function CancerPredictionPage() {
           </Box>
           <Upload
             accept = '.fastq, .fastq.gz'
-            maxCount= {1}
+            maxCount = {1}
+            showUploadList = {false}
             beforeUpload = {file => {
               setSecondSetFileName(file.name);
               formData.append('files', file);
@@ -304,6 +327,7 @@ function CancerPredictionPage() {
             />
           </Upload>
         </UploadContainer>
+        {errors.secondSetFileName && <ErrorMessage>{errors.secondSetFileName}</ErrorMessage>}
       </BoxContainer>
 
       {/* Select sample type */}
@@ -320,6 +344,7 @@ function CancerPredictionPage() {
             { value: 'positive', label: 'Positive' }
           ]}
         />
+        {errors.sampleType && <ErrorMessage>{errors.sampleType}</ErrorMessage>}
       </BoxContainer>
 
       {/* Select diagnosis group */}
@@ -356,6 +381,7 @@ function CancerPredictionPage() {
             { value: 'Other brain tumors', label: 'Other brain tumors' }
           ]}
         />
+        {errors.diagnosisGroup && <ErrorMessage>{errors.diagnosisGroup}</ErrorMessage>}
       </BoxContainer>
 
       {/* Select entity type */}
@@ -375,6 +401,7 @@ function CancerPredictionPage() {
             { value: 'Others', label: 'Others' }
           ]}
         />
+        {errors.entityType && <ErrorMessage>{errors.entityType}</ErrorMessage>}
       </BoxContainer>
 
       {/* Run tool button */}
@@ -396,6 +423,7 @@ function CancerPredictionPage() {
           }}
           icon={<CaretRightOutlined style={{ marginRight: '-8px' }} />}
           onClick={handleRunTool}
+          // disabled={!sampleName || !sampleType || !diagnosisGroup || !entityType || !firstSetFileName || !secondSetFileName}
         >
           <span style={{ marginTop: '4px' }}>Run Tool</span>
         </Button>
