@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Select, Upload, Button, Divider, message } from 'antd';
+import { Select, Upload, Button, Divider, message, Form, Row, Col } from 'antd';
 import { UploadOutlined, CaretRightOutlined, CloseCircleFilled } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -146,56 +146,41 @@ const DeleteButton = styled.button`
   }
 `;
 
+
 function CancerPredictionPage() {
   const [sampleName, setSampleName] = useState('');
   const [sampleType, setSampleType] = useState('');
   const [diagnosisGroup, setDiagnosisGroup] = useState('');
   const [entityType, setEntityType] = useState('');
-  const [fileList, setFileList] = useState([]);
   const [firstSetFileName, setFirstSetFileName] = useState('');
   const [secondSetFileName, setSecondSetFileName] = useState('');
   const navigate = useNavigate();
 
-  const handleFileUpload = (event, uid) => {
-    const file = event.target.files[0];
-    if (file) {
-      const fileName = file.name;
-      if (uid === '1') {
-        setFirstSetFileName(fileName);
-      } else if (uid === '2') {
-        setSecondSetFileName(fileName);
-      }
-      message.success(`${fileName} file uploaded successfully`);
-    }
-  };
 
   const handleDeleteFile = (uid) => {
     if (uid === '1') {
       setFirstSetFileName('');
-      document.getElementById('first-set-upload').value = '';
     } else if (uid === '2') {
       setSecondSetFileName('');
-      document.getElementById('second-set-upload').value = '';
     }
   };
 
+  // Run tool button
   const handleRunTool = async (event) => {
     event.preventDefault();
 
     const formData = new FormData();
     formData.append('sample_name', sampleName);
-    fileList.forEach(file => {
-      formData.append('files', file);
-    });
 
     try {
-      await axios.post('http://localhost:8000/api/upload-to-gcs/', formData, {
+      await axios.post('/api/upload-to-gcs/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      const response = await axios.post('http://localhost:8000/api/create-project-data/', {
+      // Create new project data
+      const response = await axios.post('/api/create-project-data/', {
         sample_name: sampleName,
         sample_type: sampleType,
         diagnosis_group: diagnosisGroup,
@@ -205,6 +190,11 @@ function CancerPredictionPage() {
       if (response.data.status === 'success') {
         alert(`Data saved successfully with sample_id: ${response.data.sample_id}`);
         navigate('/History');
+
+        // Trigger the bioinformatics pipeline after navigating to History page
+        await axios.post('/api/trigger-pipeline/', {
+          sample_name: sampleName,
+          history_id: response.data.history_id });
       } else {
         alert('Failed to save data');
       }
@@ -218,9 +208,12 @@ function CancerPredictionPage() {
     <div style={{ padding: 40 }}>
       <GlobalSelectStyle />
 
+      {/* Tool name */}
       <StyledTopic color="#094067">
         <Title>Cancer Prediction</Title>
       </StyledTopic>
+
+      {/* Enter sample name */}
       <BoxContainer>
         <Label>Sample name</Label>
         <StyledInput
@@ -230,41 +223,55 @@ function CancerPredictionPage() {
         />
       </BoxContainer>
 
+      {/* Select first set of reads */}
       <BoxContainer>
         <Label>Select first set of reads</Label>
         <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
-          <Box>
+          {/* <Box>
             <StyledText>{firstSetFileName || 'No file selected'}</StyledText>
             {firstSetFileName && (
               <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
             )}
-          </Box>
-          {/* <Upload
-            fileList={fileList}
-            beforeUpload={file => {
-              setFileList([...fileList, file]);
-              return false;
+          </Box> */}
+          <Upload
+            accept = '.fastq, .fastq.gz'
+            maxCount= {1}
+            beforeUpload = {file => {
+              setFirstSetFileName(file.name);
+              formData.append('files', file);
+              return false
             }}
-          > */}
-            <label htmlFor="first-set-upload">
-              <UploadOutlined
-                style={{
-                  fontSize: '20px',
-                  marginTop: '4px',
-                  marginLeft: '20px',
-                  padding: '9px',
-                  color: '#fffffe',
-                  backgroundColor: '#3DA9FC',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                }}
-              />
-              <input type="file" id="first-set-upload" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, '1')} />
-            </label>
-          {/* </Upload> */}
+          >
+            <Row>
+              <Col flex={2}>
+                <Box>
+                  <StyledText>{firstSetFileName || 'No file selected'}</StyledText>
+                  {firstSetFileName && (
+                    <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
+                  )}
+                </Box>
+              </Col>
+              <Col flex={3}>
+                <UploadOutlined
+                  style={{
+                    fontSize: '20px',
+                    marginTop: '4px',
+                    marginLeft: '20px',
+                    padding: '9px',
+                    color: '#fffffe',
+                    backgroundColor: '#3DA9FC',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                  }}
+                />
+              </Col>
+            </Row>
+            
+          </Upload>
         </UploadContainer>
       </BoxContainer>
 
+      {/* Select second set of reads */}
       <BoxContainer>
         <Label>Select second set of reads</Label>
         <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
@@ -274,32 +281,32 @@ function CancerPredictionPage() {
               <DeleteButton onClick={() => handleDeleteFile('2')}><CloseCircleFilled /></DeleteButton>
             )}
           </Box>
-          {/* <Upload
-            fileList={fileList}
-            beforeUpload={file => {
-              setFileList([...fileList, file]);
-              return false;
+          <Upload
+            accept = '.fastq, .fastq.gz'
+            maxCount= {1}
+            beforeUpload = {file => {
+              setSecondSetFileName(file.name);
+              formData.append('files', file);
+              return false
             }}
-          > */}
-            <label htmlFor="second-set-upload">
-              <UploadOutlined
-                style={{
-                  fontSize: '20px',
-                  marginTop: '4px',
-                  marginLeft: '20px',
-                  padding: '9px',
-                  color: '#fffffe',
-                  backgroundColor: '#3DA9FC',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                }}
-              />
-              <input type="file" id="second-set-upload" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, '2')} />
-            </label>
-          {/* </Upload> */}
+          >
+            <UploadOutlined
+              style={{
+                fontSize: '20px',
+                marginTop: '4px',
+                marginLeft: '20px',
+                padding: '9px',
+                color: '#fffffe',
+                backgroundColor: '#3DA9FC',
+                borderRadius: '10px',
+                cursor: 'pointer',
+              }}
+            />
+          </Upload>
         </UploadContainer>
       </BoxContainer>
 
+      {/* Select sample type */}
       <BoxContainer>
         <Label>Sample Type</Label>
         <Select
@@ -315,6 +322,7 @@ function CancerPredictionPage() {
         />
       </BoxContainer>
 
+      {/* Select diagnosis group */}
       <BoxContainer>
         <Label>Diagnosis Group</Label>
         <Select
@@ -350,12 +358,13 @@ function CancerPredictionPage() {
         />
       </BoxContainer>
 
+      {/* Select entity type */}
       <BoxContainer>
         <Label>Entity Type</Label>
         <Select
           value={entityType}
           onChange={setEntityType}
-          placeholder={<PlaceholderText>Select Entity Type</PlaceholderText>}
+          placeholder="Select Entity Type"
           size="large"
           style={{ width: 806, borderRadius: 10, fontSize: 27 }}
           options={[
@@ -368,6 +377,7 @@ function CancerPredictionPage() {
         />
       </BoxContainer>
 
+      {/* Run tool button */}
       <ButtonContainer>
         <Button
           type="primary"
@@ -391,6 +401,7 @@ function CancerPredictionPage() {
         </Button>
       </ButtonContainer>
 
+      {/* Accepted files formate */}
       <AcceptedFormatsContainer>
         <Divider orientation="left" plain>
           <AcceptedFormatsTitle>Accepted formats</AcceptedFormatsTitle>
@@ -404,6 +415,7 @@ function CancerPredictionPage() {
           -  Colorspace FastQ
         </div>
       </AcceptedFormatsContainer2>
+
     </div>
   );
 }
