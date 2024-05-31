@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect  } from 'react';
+import { useNavigate, useLocation  } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Select, Upload, Button, Divider, message } from 'antd';
+import { Upload, Button, Divider } from 'antd';
 import { UploadOutlined, CaretRightOutlined, CloseCircleFilled } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -130,6 +130,10 @@ const AcceptedFormatsContainer2 = styled.div`
 
 const StyledText = styled.div`
   padding-left: 10px;
+
+  &::placeholder {
+    color: rgba(95, 108, 123, 0.5);
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -146,193 +150,231 @@ const DeleteButton = styled.button`
   }
 `;
 
-function MappingPage() {
-    const [sampleName, setSampleName] = useState('');
-    const [fileList, setFileList] = useState([]);
-    const [firstSetFileName, setFirstSetFileName] = useState('');
-    const [secondSetFileName, setSecondSetFileName] = useState('');
-    const navigate = useNavigate();
-  
-    const handleFileUpload = (event, uid) => {
-      const file = event.target.files[0];
-      if (file) {
-        const fileName = file.name;
-        if (uid === '1') {
-          setFirstSetFileName(fileName);
-        } else if (uid === '2') {
-          setSecondSetFileName(fileName);
-        }
-        message.success(`${fileName} file uploaded successfully`);
-      }
-    };
-  
-    const handleDeleteFile = (uid) => {
-      if (uid === '1') {
-        setFirstSetFileName('');
-        document.getElementById('first-set-upload').value = '';
-      } else if (uid === '2') {
-        setSecondSetFileName('');
-        document.getElementById('second-set-upload').value = '';
-      }
-    };
-  
-    const handleRunTool = async (event) => {
-      event.preventDefault();
-  
-      const formData = new FormData();
-      formData.append('sample_name', sampleName);
-      fileList.forEach(file => {
-        formData.append('files', file);
-      });
-  
-      try {
-        await axios.post('http://localhost:8000/api/upload-to-gcs/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-  
-        const response = await axios.post('http://localhost:8000/api/create-project-data/', {
-          sample_name: sampleName,
-        });
-  
-        if (response.data.status === 'success') {
-          alert(`Data saved successfully with sample_id: ${response.data.sample_id}`);
-          navigate('/History');
-        } else {
-          alert('Failed to save data');
-        }
-      } catch (error) {
-        alert('An error occurred while saving data');
-        console.error(error);
-      }
-    };
-  
-    return (
-      <div style={{ padding: 40 }}>
-        <GlobalSelectStyle />
-  
-        <StyledTopic color="#094067">
-          <Title>Mapping</Title>
-        </StyledTopic>
-        <BoxContainer>
-          <Label>Sample name</Label>
-          <StyledInput
-            placeholder="Enter Sample name"
-            value={sampleName}
-            onChange={(e) => setSampleName(e.target.value)}
-          />
-        </BoxContainer>
-  
-        <BoxContainer>
-          <Label>Select first set of reads</Label>
-          <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
-            <Box>
-              <StyledText>{firstSetFileName || 'No file selected'}</StyledText>
-              {firstSetFileName && (
-                <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
-              )}
-            </Box>
-            {/* <Upload
-              fileList={fileList}
-              beforeUpload={file => {
-                setFileList([...fileList, file]);
-                return false;
-              }}
-            > */}
-              <label htmlFor="first-set-upload">
-                <UploadOutlined
-                  style={{
-                    fontSize: '20px',
-                    marginTop: '4px',
-                    marginLeft: '20px',
-                    padding: '9px',
-                    color: '#fffffe',
-                    backgroundColor: '#3DA9FC',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                  }}
-                />
-                <input type="file" id="first-set-upload" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, '1')} />
-              </label>
-            {/* </Upload> */}
-          </UploadContainer>
-        </BoxContainer>
-  
-        <BoxContainer>
-          <Label>Select second set of reads</Label>
-          <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
-            <Box>
-              <StyledText>{secondSetFileName || 'No file selected'}</StyledText>
-              {secondSetFileName && (
-                <DeleteButton onClick={() => handleDeleteFile('2')}><CloseCircleFilled /></DeleteButton>
-              )}
-            </Box>
-            {/* <Upload
-              fileList={fileList}
-              beforeUpload={file => {
-                setFileList([...fileList, file]);
-                return false;
-              }}
-            > */}
-              <label htmlFor="second-set-upload">
-                <UploadOutlined
-                  style={{
-                    fontSize: '20px',
-                    marginTop: '4px',
-                    marginLeft: '20px',
-                    padding: '9px',
-                    color: '#fffffe',
-                    backgroundColor: '#3DA9FC',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                  }}
-                />
-                <input type="file" id="second-set-upload" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, '2')} />
-              </label>
-            {/* </Upload> */}
-          </UploadContainer>
-        </BoxContainer>
+const ErrorMessage = styled.div`
+  color: #ef4565;
+  font-size: 20px;
+  font-family: Dongle;
+  font-weight: 400;
+  margin-top: 5px;
+`;
 
-        <ButtonContainer>
-        <Button
-          type="primary"
-          style={{
-            background: '#3DA9FC',
-            color: 'white',
-            width: '123px',
-            height: '45px',
-            marginTop: '20px',
-            borderRadius: '10px',
-            fontSize: '25px',
-            fontFamily: 'Dongle',
-            fontWeight: '400',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          icon={<CaretRightOutlined style={{ marginRight: '-8px' }} />}
-          onClick={handleRunTool}
-        >
-          <span style={{ marginTop: '4px' }}>Run Tool</span>
-        </Button>
-      </ButtonContainer>
-  
-        <AcceptedFormatsContainer>
-          <Divider orientation="left" plain>
-            <AcceptedFormatsTitle>Accepted formats</AcceptedFormatsTitle>
-          </Divider>
-        </AcceptedFormatsContainer>
-  
-        <AcceptedFormatsContainer2>
-          <div style={{ color: '#5F6C7B', fontSize: 20, fontFamily: 'Dongle', fontWeight: '400', wordWrap: 'break-word' }}>
-            -  FastQ (all quality encoding variants)<br />
-            -  Casava FastQ files*<br />
-            -  Colorspace FastQ<br />
-            -  GZip compressed FastQ<br />
-          </div>
-        </AcceptedFormatsContainer2>
-      </div>
-    );
-  }
+function MappingPage() {
+  const [sampleName, setSampleName] = useState('');
+  const [firstSetFileName, setFirstSetFileName] = useState('');
+  const [secondSetFileName, setSecondSetFileName] = useState('');
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { tool_id } = location.state || {};
+  const [tool, setTool] = useState(null);
+
+  useEffect(() => {
+    if (tool_id) {
+      fetchToolData(tool_id);
+    }
+  }, [tool_id]);
+
+  const fetchToolData = async (tool_id) => {
+    try {
+      const response = await axios.get(`/api/tools/${tool_id}`);
+      setTool(response.data);
+    } catch (error) {
+      console.error('Error fetching tool data:', error);
+    }
+  };
+
+
+  const handleDeleteFile = (uid) => {
+    if (uid === '1') {
+      setFirstSetFileName('');
+    } else if (uid === '2') {
+      setSecondSetFileName('');
+    }
+  };
+
+  const validateFields = () => {
+    const newErrors = {};
+
+    if (!sampleName) newErrors.sampleName = 'The field must not be empty';
+    if (!firstSetFileName) newErrors.firstSetFileName = 'The field must not be empty';
+    if (!secondSetFileName) newErrors.secondSetFileName = 'The field must not be empty';
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+  const handleRunTool = async (event) => {
+    event.preventDefault();
+
+    if (!validateFields()) return;
+
+    const formData = new FormData();
+    formData.append('sample_name', sampleName);
+    fileList.forEach(file => {
+      formData.append('files', file);
+    });
+
+    try {
+      await axios.post('api/upload-to-gcs/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const response = await axios.post('api/create-project-data/', {
+        sample_name: sampleName,
+      });
+
+      if (response.data.status === 'success') {
+        alert(`Data saved successfully with sample_id: ${response.data.sample_id}`);
+        // navigate('/History2');
+      } else {
+        alert('Failed to save data');
+      }
+    } catch (error) {
+      alert('An error occurred while saving data');
+      console.error(error);
+    }
+  };
+
+  return (
+    <div style={{ padding: 40 }}>
+      <GlobalSelectStyle />
+
+      <StyledTopic color="#094067">
+        {/* <Title>Mapping</Title> */}
+        <Title>{tool ? tool.tool_name : 'Mapping'}</Title>
+      </StyledTopic>
+
+      <BoxContainer>
+        <Label>Sample name</Label>
+        <StyledInput
+          placeholder="Enter Sample name"
+          value={sampleName}
+          onChange={(e) => setSampleName(e.target.value)}
+        />
+        {errors.sampleName && <ErrorMessage>{errors.sampleName}</ErrorMessage>}
+      </BoxContainer>
+
+      <BoxContainer>
+        <Label>Select first set of reads</Label>
+        <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
+          <Box>
+            <StyledText>
+              {!firstSetFileName && <span style={{ color: 'rgba(95, 108, 123, 0.5)' }}>No file selected</span>}
+              {firstSetFileName || ''}
+            </StyledText>
+            {firstSetFileName && (
+              <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
+            )}
+          </Box>
+          <Upload
+            accept='.fastq, .fastq.gz'
+            maxCount={1}
+            showUploadList={false}
+            beforeUpload={file => {
+              setFirstSetFileName(file.name);
+              formData.append('files', file);
+              return false
+            }}
+          >
+            <UploadOutlined
+              style={{
+                fontSize: '20px',
+                // marginTop: '4px',
+                marginLeft: '20px',
+                padding: '9px',
+                color: '#fffffe',
+                backgroundColor: '#3DA9FC',
+                borderRadius: '10px',
+                cursor: 'pointer',
+              }}
+            />
+          </Upload>
+        </UploadContainer>
+        {errors.firstSetFileName && <ErrorMessage>{errors.firstSetFileName}</ErrorMessage>}
+      </BoxContainer>
+
+      <BoxContainer>
+        <Label>Select second set of reads</Label>
+        <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
+          <Box>
+            <StyledText>
+              {!secondSetFileName && <span style={{ color: 'rgba(95, 108, 123, 0.5)' }}>No file selected</span>}
+              {secondSetFileName || ''}
+            </StyledText>
+            {secondSetFileName && (
+              <DeleteButton onClick={() => handleDeleteFile('2')}><CloseCircleFilled /></DeleteButton>
+            )}
+          </Box>
+          <Upload
+            accept='.fastq, .fastq.gz'
+            maxCount={1}
+            showUploadList={false}
+            beforeUpload={file => {
+              setSecondSetFileName(file.name);
+              formData.append('files', file);
+              return false
+            }}
+          >
+            <UploadOutlined
+              style={{
+                fontSize: '20px',
+                // marginTop: '4px',
+                marginLeft: '20px',
+                padding: '9px',
+                color: '#fffffe',
+                backgroundColor: '#3DA9FC',
+                borderRadius: '10px',
+                cursor: 'pointer',
+              }}
+            />
+          </Upload>
+        </UploadContainer>
+        {errors.secondSetFileName && <ErrorMessage>{errors.secondSetFileName}</ErrorMessage>}
+      </BoxContainer>
+
+      <ButtonContainer>
+      <Button
+        type="primary"
+        style={{
+          background: '#3DA9FC',
+          color: 'white',
+          width: '123px',
+          height: '45px',
+          marginTop: '20px',
+          borderRadius: '10px',
+          fontSize: '25px',
+          fontFamily: 'Dongle',
+          fontWeight: '400',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+        icon={<CaretRightOutlined style={{ marginRight: '-8px' }} />}
+        onClick={handleRunTool}
+      >
+        <span style={{ marginTop: '4px' }}>Run Tool</span>
+      </Button>
+    </ButtonContainer>
+
+      <AcceptedFormatsContainer>
+        <Divider orientation="left" plain>
+          <AcceptedFormatsTitle>Accepted formats</AcceptedFormatsTitle>
+        </Divider>
+      </AcceptedFormatsContainer>
+
+      <AcceptedFormatsContainer2>
+        <div style={{ color: '#5F6C7B', fontSize: 20, fontFamily: 'Dongle', fontWeight: '400', wordWrap: 'break-word' }}>
+          -  FastQ (all quality encoding variants)<br />
+          -  Casava FastQ files*<br />
+          -  Colorspace FastQ<br />
+          -  GZip compressed FastQ<br />
+        </div>
+      </AcceptedFormatsContainer2>
+    </div>
+  );
+}
 
 export default MappingPage;

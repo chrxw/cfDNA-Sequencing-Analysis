@@ -118,19 +118,17 @@ def project_data(request):
 # Analysis Center
 
 ## Select Tool
-def get_tools(request):
-    if request.method == 'GET':
-        tools = BioinformaticsTool.objects.all()
-        tools_data = [
-            {
-                'tool_id': tool.tool_id,
-                'tool_name': tool.tool_name,
-                'package_name': tool.package_name,
-            }
-            for tool in tools
-        ]
-        return JsonResponse({'tools': tools_data})
-    return JsonResponse({'message': 'Invalid request method.'}, status=405)
+def get_tool(request, tool_id):
+    try:
+        tool = BioinformaticsTool.objects.get(tool_id=tool_id)
+        tool_data = {
+            'tool_id': tool.tool_id,
+            'tool_name': tool.tool_name,
+            'package_name': tool.package_name,
+        }
+        return JsonResponse(tool_data)
+    except BioinformaticsTool.DoesNotExist:
+        return JsonResponse({'message': 'Tool not found.'}, status=404)
 
 ## Upload file to google cloud storage
 @csrf_exempt

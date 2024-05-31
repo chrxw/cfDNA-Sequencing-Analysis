@@ -1,9 +1,10 @@
-import React, { useState, useEffect  } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Select, Upload, Button, Divider } from 'antd';
+import { Select, Upload, Button, Divider, Checkbox } from 'antd';
 import { UploadOutlined, CaretRightOutlined, CloseCircleFilled } from '@ant-design/icons';
 import axios from 'axios';
+
 
 const GlobalSelectStyle = createGlobalStyle`
   .ant-select-item-option-content {
@@ -20,7 +21,18 @@ const GlobalSelectStyle = createGlobalStyle`
     font-weight: 400;
     color: rgba(95, 108, 123, 1);
     text-indent: 10px;
+    margin-top:2px;
   }
+  .ant-select-selection-placeholder {
+    font-size: 27px;
+    font-family: Dongle;
+    font-weight: 400;
+    color: rgba(95, 108, 123, 0.5);
+    text-indent: 10px;
+    margin-left:-10px;
+    margin-top:1px;
+  }
+
 `;
 
 const PlaceholderText = styled.span`
@@ -66,7 +78,10 @@ const BoxContainer = styled.div`
   align-items: flex-start;
   margin-bottom: 20px;
   margin-left: 30px;
+  
 `;
+
+
 
 const Label = styled.div`
   font-size: 32px;
@@ -130,6 +145,11 @@ const AcceptedFormatsContainer2 = styled.div`
 
 const StyledText = styled.div`
   padding-left: 10px;
+ 
+
+  &::placeholder {
+    color: rgba(95, 108, 123, 0.5);
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -154,6 +174,15 @@ const ErrorMessage = styled.div`
   margin-top: 5px;
 `;
 
+const CheckboxText = styled.p`
+  font-size: 27px;
+  color: #5F6C7B;
+  padding-bottom: 30 px;
+  align-items: center;
+  margin-top: 5px;
+  // margin-left: 10px;
+`;
+
 
 function CancerPredictionPage() {
   const [sampleName, setSampleName] = useState('');
@@ -163,14 +192,37 @@ function CancerPredictionPage() {
   const [firstSetFileName, setFirstSetFileName] = useState('');
   const [secondSetFileName, setSecondSetFileName] = useState('');
   const [errors, setErrors] = useState({});
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
+  const [showSelections, setShowSelections] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { tool_id } = location.state || {};
+  const [tool, setTool] = useState(null);
 
-  // useEffect(() => {
-  //   const hasErrors = Object.values(errors).some(error => error);
-  //   const isFormValid = sampleName && sampleType && diagnosisGroup && entityType && firstSetFileName && secondSetFileName;
-  //   setFormValid(isFormValid && !hasErrors);
-  // }, [sampleName, sampleType, diagnosisGroup, entityType, firstSetFileName, secondSetFileName, errors]);
+  useEffect(() => {
+    if (tool_id) {
+      fetchToolData(tool_id);
+    }
+  }, [tool_id]);
 
+  const fetchToolData = async (tool_id) => {
+    try {
+      const response = await axios.get(`/api/tools/${tool_id}`);
+      setTool(response.data);
+    } catch (error) {
+      console.error('Error fetching tool data:', error);
+    }
+  };
+
+  const handleCheckboxChange = (checked) => {
+    setSelectAllChecked(checked);
+    setShowSelections(!checked);
+    if (!checked) {
+      setSampleType('');
+      setDiagnosisGroup('');
+      setEntityType('');
+    }
+  };
 
   const handleDeleteFile = (uid) => {
     if (uid === '1') {
@@ -242,7 +294,8 @@ function CancerPredictionPage() {
 
       {/* Tool name */}
       <StyledTopic color="#094067">
-        <Title>Cancer Prediction</Title>
+        {/* <Title>Cancer Prediction</Title> */}
+        <Title>{tool ? tool.tool_name : 'Cancer Prediction'}</Title>
       </StyledTopic>
 
       {/* Enter sample name */}
@@ -261,16 +314,19 @@ function CancerPredictionPage() {
         <Label>Select first set of reads</Label>
         <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
           <Box>
-            <StyledText>{firstSetFileName || 'No file selected'}</StyledText>
+            <StyledText>
+              {!firstSetFileName && <span style={{ color: 'rgba(95, 108, 123, 0.5)' }}>No file selected</span>}
+              {firstSetFileName || ''}
+            </StyledText>
             {firstSetFileName && (
               <DeleteButton onClick={() => handleDeleteFile('1')}><CloseCircleFilled /></DeleteButton>
             )}
           </Box>
           <Upload
-            accept = '.fastq, .fastq.gz'
-            maxCount= {1}
-            showUploadList = {false}
-            beforeUpload = {file => {
+            accept='.fastq, .fastq.gz'
+            maxCount={1}
+            showUploadList={false}
+            beforeUpload={file => {
               setFirstSetFileName(file.name);
               formData.append('files', file);
               return false
@@ -279,7 +335,7 @@ function CancerPredictionPage() {
             <UploadOutlined
               style={{
                 fontSize: '20px',
-                marginTop: '4px',
+                // marginTop: '4px',
                 marginLeft: '20px',
                 padding: '9px',
                 color: '#fffffe',
@@ -298,16 +354,19 @@ function CancerPredictionPage() {
         <Label>Select second set of reads</Label>
         <UploadContainer style={{ fontSize: '26px', color: '#5F6C7B', fontFamily: 'Dongle', fontWeight: '400' }}>
           <Box>
-            <StyledText>{secondSetFileName || 'No file selected'}</StyledText>
+            <StyledText>
+              {!secondSetFileName && <span style={{ color: 'rgba(95, 108, 123, 0.5)' }}>No file selected</span>}
+              {secondSetFileName || ''}
+            </StyledText>
             {secondSetFileName && (
               <DeleteButton onClick={() => handleDeleteFile('2')}><CloseCircleFilled /></DeleteButton>
             )}
           </Box>
           <Upload
-            accept = '.fastq, .fastq.gz'
-            maxCount = {1}
-            showUploadList = {false}
-            beforeUpload = {file => {
+            accept='.fastq, .fastq.gz'
+            maxCount={1}
+            showUploadList={false}
+            beforeUpload={file => {
               setSecondSetFileName(file.name);
               formData.append('files', file);
               return false
@@ -316,7 +375,7 @@ function CancerPredictionPage() {
             <UploadOutlined
               style={{
                 fontSize: '20px',
-                marginTop: '4px',
+                // marginTop: '4px',
                 marginLeft: '20px',
                 padding: '9px',
                 color: '#fffffe',
@@ -330,79 +389,120 @@ function CancerPredictionPage() {
         {errors.secondSetFileName && <ErrorMessage>{errors.secondSetFileName}</ErrorMessage>}
       </BoxContainer>
 
-      {/* Select sample type */}
+      {/* Checkbox for confirmation */}
       <BoxContainer>
-        <Label>Sample Type</Label>
-        <Select
-          value={sampleType}
-          onChange={setSampleType}
-          placeholder={<PlaceholderText>Select Sample Type</PlaceholderText>}
-          size="large"
-          style={{ width: 806, borderRadius: 10, fontSize: 27 }}
-          options={[
-            { value: 'control', label: 'Control' },
-            { value: 'positive', label: 'Positive' }
-          ]}
-        />
-        {errors.sampleType && <ErrorMessage>{errors.sampleType}</ErrorMessage>}
+        <Checkbox checked={selectAllChecked} onChange={(e) => handleCheckboxChange(e.target.checked)}>
+          {selectAllChecked ? <CheckboxText>Please uncheck when you are aware of the sample's data type.</CheckboxText>: <CheckboxText>Please check when you are unaware of the sample's data type.</CheckboxText>}
+        </Checkbox>
       </BoxContainer>
 
-      {/* Select diagnosis group */}
-      <BoxContainer>
-        <Label>Diagnosis Group</Label>
-        <Select
-          value={diagnosisGroup}
-          onChange={setDiagnosisGroup}
-          placeholder={<PlaceholderText>Select Diagnosis Group</PlaceholderText>}
-          size="large"
-          style={{ width: 806, borderRadius: 10, fontSize: 27 }}
-          options={[
-            { value: 'none', label: 'None' },
-            { value: 'High Grade Glioma (incl.DIPG)', label: 'High Grade Glioma (incl.DIPG)' },
-            { value: 'RMA', label: 'RMA' },
-            { value: 'Medulloblastoma', label: 'Medulloblastoma' },
-            { value: 'RME', label: 'RME' },
-            { value: 'IMT', label: 'IMT' },
-            { value: 'Ependymoma', label: 'Ependymoma' },
-            { value: 'Ewing Sarcoma', label: 'Ewing Sarcoma' },
-            { value: 'Sarcoma (NOS)', label: 'Sarcoma (NOS)' },
-            { value: 'Osteosarcoma', label: 'Osteosarcoma' },
-            { value: 'Other embryonal brain tumors', label: 'Other embryonal brain tumors' },
-            { value: 'Hepatoblastoma', label: 'Hepatoblastoma' },
-            { value: 'Neuroblastoma', label: 'Neuroblastoma' },
-            { value: 'Rhabdoid Tumor (ATRT)', label: 'Rhabdoid Tumor (ATRT)' },
-            { value: 'Kidney tumours', label: 'Kidney tumours' },
-            { value: 'Germ cell tumors', label: 'Germ cell tumors' },
-            { value: 'Desmoplastic Small Round Cell Tumor', label: 'Desmoplastic Small Round Cell Tumo' },
-            { value: 'Other sarcomas ', label: 'Other sarcomas ' },
-            { value: 'Other tumors', label: 'Other tumors' },
-            { value: 'Other mesenchymal tumors', label: 'Other mesenchymal tumors' },
-            { value: 'Acute myeloid leukemia', label: 'Acute myeloid leukemia' },
-            { value: 'Other brain tumors', label: 'Other brain tumors' }
-          ]}
-        />
-        {errors.diagnosisGroup && <ErrorMessage>{errors.diagnosisGroup}</ErrorMessage>}
-      </BoxContainer>
+      {/* Selections */}
+      {showSelections && (
+        <>
 
-      {/* Select entity type */}
-      <BoxContainer>
-        <Label>Entity Type</Label>
-        <Select
-          value={entityType}
-          onChange={setEntityType}
-          placeholder="Select Entity Type"
-          size="large"
-          style={{ width: 806, borderRadius: 10, fontSize: 27 }}
-          options={[
-            { value: 'Brain tumors', label: 'Brain tumors' },
-            { value: 'Sarcomas', label: 'Sarcomas' },
-            { value: 'Neuroblastoma', label: 'Neuroblastoma' },
-            { value: 'Hematolgical malignanciess', label: 'Hematolgical malignancies' },
-            { value: 'Others', label: 'Others' }
-          ]}
-        />
-        {errors.entityType && <ErrorMessage>{errors.entityType}</ErrorMessage>}
-      </BoxContainer>
+          {/* Select sample type */}
+          <BoxContainer>
+            <Label>Sample Type</Label>
+            <Select
+              defaultValue={null}
+              // value={sampleType}
+              onChange={setSampleType}
+              size="large"
+              className="custom-select"
+              style={{
+                width: 806,
+                height: 42,
+                borderRadius: '10px',
+                fontSize: '27px',
+                border: '1px solid transparent',
+                // marginLeft:'-10px',
+              }}
+              placeholder={<PlaceholderText>Select sample type</PlaceholderText>}
+              options={[
+                { value: 'control', label: 'Control' },
+                { value: 'positive', label: 'Positive' }
+              ]}
+            />
+            {errors.sampleType && <ErrorMessage>{errors.sampleType}</ErrorMessage>}
+          </BoxContainer>
+
+          {/* Select diagnosis group */}
+          <BoxContainer>
+            <Label>Diagnosis Group</Label>
+            <Select
+              defaultValue={null}
+              // value={diagnosisGroup}
+              onChange={setDiagnosisGroup}
+              size="large"
+              className="custom-select"
+              style={{
+                width: 806,
+                height: 42,
+                borderRadius: '10px',
+                fontSize: '27px',
+                border: '1px solid transparent',
+                // marginLeft:'-10px',
+              }}
+              placeholder={<PlaceholderText>Select Diagnosis Group</PlaceholderText>}
+              options={[
+                { value: 'none', label: 'None' },
+                { value: 'High Grade Glioma (incl.DIPG)', label: 'High Grade Glioma (incl.DIPG)' },
+                { value: 'RMA', label: 'RMA' },
+                { value: 'Medulloblastoma', label: 'Medulloblastoma' },
+                { value: 'RME', label: 'RME' },
+                { value: 'IMT', label: 'IMT' },
+                { value: 'Ependymoma', label: 'Ependymoma' },
+                { value: 'Ewing Sarcoma', label: 'Ewing Sarcoma' },
+                { value: 'Sarcoma (NOS)', label: 'Sarcoma (NOS)' },
+                { value: 'Osteosarcoma', label: 'Osteosarcoma' },
+                { value: 'Other embryonal brain tumors', label: 'Other embryonal brain tumors' },
+                { value: 'Hepatoblastoma', label: 'Hepatoblastoma' },
+                { value: 'Neuroblastoma', label: 'Neuroblastoma' },
+                { value: 'Rhabdoid Tumor (ATRT)', label: 'Rhabdoid Tumor (ATRT)' },
+                { value: 'Kidney tumours', label: 'Kidney tumours' },
+                { value: 'Germ cell tumors', label: 'Germ cell tumors' },
+                { value: 'Desmoplastic Small Round Cell Tumor', label: 'Desmoplastic Small Round Cell Tumo' },
+                { value: 'Other sarcomas ', label: 'Other sarcomas ' },
+                { value: 'Other tumors', label: 'Other tumors' },
+                { value: 'Other mesenchymal tumors', label: 'Other mesenchymal tumors' },
+                { value: 'Acute myeloid leukemia', label: 'Acute myeloid leukemia' },
+                { value: 'Other brain tumors', label: 'Other brain tumors' }
+              ]}
+            />
+            {errors.diagnosisGroup && <ErrorMessage>{errors.diagnosisGroup}</ErrorMessage>}
+          </BoxContainer>
+
+          {/* Select entity type */}
+          <BoxContainer>
+            <Label>Entity Type</Label>
+            <Select
+              defaultValue={null}
+              // value={entityType}
+              onChange={setEntityType}
+              size="large"
+              className="custom-select"
+              style={{
+                width: 806,
+                height: 42,
+                borderRadius: '10px',
+                fontSize: '27px',
+                border: '1px solid transparent',
+                // marginLeft:'-10px',
+              }}
+              placeholder={<PlaceholderText>Select Entity Type</PlaceholderText>}
+
+              options={[
+                { value: 'Brain tumors', label: 'Brain tumors' },
+                { value: 'Sarcomas', label: 'Sarcomas' },
+                { value: 'Neuroblastoma', label: 'Neuroblastoma' },
+                { value: 'Hematolgical malignanciess', label: 'Hematolgical malignancies' },
+                { value: 'Others', label: 'Others' }
+              ]}
+            />
+            {errors.entityType && <ErrorMessage>{errors.entityType}</ErrorMessage>}
+          </BoxContainer>
+        </>
+      )}
 
       {/* Run tool button */}
       <ButtonContainer>
@@ -423,7 +523,7 @@ function CancerPredictionPage() {
           }}
           icon={<CaretRightOutlined style={{ marginRight: '-8px' }} />}
           onClick={handleRunTool}
-          // disabled={!sampleName || !sampleType || !diagnosisGroup || !entityType || !firstSetFileName || !secondSetFileName}
+        // disabled={!sampleName || !sampleType || !diagnosisGroup || !entityType || !firstSetFileName || !secondSetFileName}
         >
           <span style={{ marginTop: '4px' }}>Run Tool</span>
         </Button>
@@ -443,7 +543,6 @@ function CancerPredictionPage() {
           -  Colorspace FastQ
         </div>
       </AcceptedFormatsContainer2>
-
     </div>
   );
 }

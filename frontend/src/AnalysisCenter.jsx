@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'antd';
+
 import dnatest from './assets/dna-test.png';
 import qualitycontrol from './assets/quality-control.png';
 import molecular from './assets/molecular.png';
@@ -82,95 +83,95 @@ const ButtonTextWrapper = styled.div`
 `;
 
 function AnalysisCenter() {
+    const navigate = useNavigate();
+
+    const tools = [
+        {
+            tool_id: 'tl001',
+            tool_name: 'Cancer Prediction',
+            package_name: 'cfDNA Sequencing Analysis',
+            img: dnatest,
+            link: '/CancerPrediction'
+        },
+        {
+            tool_id: 'tl002',
+            tool_name: 'Quality Control',
+            package_name: 'FastQC',
+            img: qualitycontrol,
+            link: '/QualityControl'
+        },
+        {
+            tool_id: 'tl003',
+            tool_name: 'Mapping',
+            package_name: 'Bwa-mem',
+            img: molecular,
+            link: '/Mapping'
+        },
+        {
+            tool_id: 'tl004',
+            tool_name: 'Sorting',
+            package_name: 'SamTools',
+            img: sortdescending,
+            link: '/Sorting'
+        },
+        {
+            tool_id: 'tl005',
+            tool_name: 'MarkDuplicates',
+            package_name: 'Picard',
+            img: duplicate,
+            link: '/MarkDuplicates'
+        },
+        {
+            tool_id: 'tl006',
+            tool_name: 'Indexing',
+            package_name: 'SamTools',
+            img: menu,
+            link: '/Indexing'
+        },
+        {
+            tool_id: 'tl007',
+            tool_name: 'CNV Calling',
+            package_name: 'ichorCNA',
+            img: dna,
+            link: '/CNVCalling'
+        }
+    ];
+
+    const handleToolClick = (tool) => {
+        navigate(tool.link, { state: { tool_id: tool.tool_id } });
+    };
+
+
     return (
         <div style={{ padding: 40 }}>
             <StyledTopic color="#094067">
                 <Title>Core Tools</Title>
                 {/* Core tools */}
                 <ToolContainer>
-                    {/* Use Link instead of a regular button */}
-                    <Link to="/CancerPrediction">
-                        <StyledButton type="primary">
-                            <ToolImage src={dnatest} alt="DNA Test" />
-                            <ButtonTextWrapper>
-                                <ButtonText>Cancer Prediction</ButtonText>
-                                <ButtonDescription>cfDNA Sequencing Analysis</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                    </Link>
+                    <StyledButton type="primary" onClick={() => handleToolClick(tools[0])}>
+                        <ToolImage src={tools[0].img} alt={tools[0].tool_name} />
+                        <ButtonTextWrapper>
+                            <ButtonText>{tools[0].tool_name}</ButtonText>
+                            <ButtonDescription>{tools[0].package_name}</ButtonDescription>
+                        </ButtonTextWrapper>
+                    </StyledButton>
                 </ToolContainer>
             </StyledTopic>
 
             <StyledTopic color="#094067">
                 <Title>Analysis Tools</Title>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 480px)', columnGap: '2px', rowGap: '2px' }}>
-                    {/* Analysis tools */}
-                    <ToolContainer>
-                    <Link to="/QualityControl">
-                        <StyledButton type="primary">
-                            <ToolImage src={qualitycontrol} alt="Quality Control" />
-                            <ButtonTextWrapper>
-                                <ButtonText>Quality Control</ButtonText>
-                                <ButtonDescription>FastQC</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                        </Link>
-                    </ToolContainer>
-                    <ToolContainer>
-                    <Link to="/Mapping">
-                        <StyledButton type="primary">
-                            <ToolImage src={molecular} alt="Molecular" />
-                            <ButtonTextWrapper>
-                                <ButtonText>Mapping</ButtonText>
-                                <ButtonDescription>Bwa-mem</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                        </Link>
-                    </ToolContainer>
-                    <ToolContainer>
-                    <Link to="/Sorting">
-                        <StyledButton type="primary">
-                            <ToolImage src={sortdescending} alt="Sort Descending" />
-                            <ButtonTextWrapper>
-                                <ButtonText>Sorting</ButtonText>
-                                <ButtonDescription>SamTools</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                        </Link>
-                    </ToolContainer>
-                    <ToolContainer>
-                    <Link to="/MarkDuplicates">
-                        <StyledButton type="primary">
-                            <ToolImage src={duplicate} alt="Duplicate" />
-                            <ButtonTextWrapper>
-                                <ButtonText>MarkDuplicates</ButtonText>
-                                <ButtonDescription>Picard</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                        </Link>
-                    </ToolContainer>
-                    <ToolContainer>
-                    <Link to="/Indexing">
-                        <StyledButton type="primary">
-                            <ToolImage src={menu} alt="Menu" />
-                            <ButtonTextWrapper>
-                                <ButtonText>Indexing</ButtonText>
-                                <ButtonDescription>SamTools</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                        </Link>
-                    </ToolContainer>
-                    <ToolContainer>
-                    <Link to="/CNVCalling">
-                        <StyledButton type="primary">
-                            <ToolImage src={dna} alt="DNA" />
-                            <ButtonTextWrapper>
-                                <ButtonText>CNV Calling</ButtonText>
-                                <ButtonDescription>ichorCNA</ButtonDescription>
-                            </ButtonTextWrapper>
-                        </StyledButton>
-                        </Link>
-                    </ToolContainer>
+                    {tools.slice(1).map((tool) => (
+                        <ToolContainer key={tool.tool_id}>
+                            <StyledButton type="primary" onClick={() => handleToolClick(tool)}>
+                                <ToolImage src={tool.img} alt={tool.tool_name} />
+                                <ButtonTextWrapper>
+                                    <ButtonText>{tool.tool_name}</ButtonText>
+                                    <ButtonDescription>{tool.package_name}</ButtonDescription>
+                                </ButtonTextWrapper>
+                            </StyledButton>
+                        </ToolContainer>
+                    ))}
                 </div>
             </StyledTopic>
         </div>
