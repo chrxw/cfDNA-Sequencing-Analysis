@@ -1,5 +1,5 @@
-name: mark_duplicate
+name: snakemake
 channels:
   - bioconda
 dependencies:
-  - picard
+  - snakemake

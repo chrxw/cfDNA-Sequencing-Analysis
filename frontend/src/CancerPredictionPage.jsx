@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Select, Upload, Button, Divider, Checkbox } from 'antd';
-import { UploadOutlined, CaretRightOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { UploadOutlined, CaretRightOutlined, CloseCircleFilled, LoadingOutlined  } from '@ant-design/icons';
 import axios from 'axios';
 
 
@@ -32,7 +32,6 @@ const GlobalSelectStyle = createGlobalStyle`
     margin-left:-10px;
     margin-top:1px;
   }
-
 `;
 
 const PlaceholderText = styled.span`
@@ -189,6 +188,7 @@ function CancerPredictionPage() {
   const [sampleType, setSampleType] = useState('');
   const [diagnosisGroup, setDiagnosisGroup] = useState('');
   const [entityType, setEntityType] = useState('');
+  const [fileList, setFileList] = useState([]);
   const [firstSetFileName, setFirstSetFileName] = useState('');
   const [secondSetFileName, setSecondSetFileName] = useState('');
   const [errors, setErrors] = useState({});
@@ -217,7 +217,7 @@ function CancerPredictionPage() {
   const handleCheckboxChange = (checked) => {
     setSelectAllChecked(checked);
     setShowSelections(!checked);
-    if (!checked) {
+    if (checked) {
       setSampleType('');
       setDiagnosisGroup('');
       setEntityType('');
@@ -234,27 +234,36 @@ function CancerPredictionPage() {
 
   const validateFields = () => {
     const newErrors = {};
-
+  
     if (!sampleName) newErrors.sampleName = 'The field must not be empty';
     if (!firstSetFileName) newErrors.firstSetFileName = 'The field must not be empty';
     if (!secondSetFileName) newErrors.secondSetFileName = 'The field must not be empty';
-    if (!sampleType) newErrors.sampleType = 'The field must not be empty';
-    if (!diagnosisGroup) newErrors.diagnosisGroup = 'The field must not be empty';
-    if (!entityType) newErrors.entityType = 'The field must not be empty';
-
+  
+    if (!selectAllChecked) {
+      if (!sampleType) newErrors.sampleType = 'The field must not be empty';
+      if (!diagnosisGroup) newErrors.diagnosisGroup = 'The field must not be empty';
+      if (!entityType) newErrors.entityType = 'The field must not be empty';
+    }
+  
     setErrors(newErrors);
-
+  
     return Object.keys(newErrors).length === 0;
   };
 
+  
   // Run tool button
   const handleRunTool = async (event) => {
     event.preventDefault();
 
     if (!validateFields()) return;
 
+
     const formData = new FormData();
     formData.append('sample_name', sampleName);
+    fileList.forEach(file => {
+      formData.append('files', file);
+    });
+
 
     try {
       await axios.post('/api/upload-to-gcs/', formData, {
@@ -268,17 +277,28 @@ function CancerPredictionPage() {
         sample_name: sampleName,
         sample_type: sampleType,
         diagnosis_group: diagnosisGroup,
-        entity_type: entityType
+        entity_type: entityType,
+        tool_id: 'tl001'
       });
 
       if (response.data.status === 'success') {
         alert(`Data saved successfully with sample_id: ${response.data.sample_id}`);
-        // navigate('/History2');
 
-        // Trigger the bioinformatics pipeline after navigating to History page
-        // await axios.post('/api/trigger-pipeline/', {
-        //   sample_name: sampleName,
-        //   history_id: response.data.history_id });
+        const historyId = response.data.history_id;
+        axios.get(`/api/display_history/${historyId}/`)
+          .then(response2 => {
+            const historyData = response2.data.history_data;
+            navigate('/History2', { state: { historyData, sourcePage: '/CancerPrediction' } });
+          })
+          .catch(error => {
+            console.error('Error fetching history data:', error);
+          });
+
+        // Trigger the bioinformatics pipeline
+        await axios.post('/api/trigger-pipeline/', {
+          sample_name: sampleName,
+          history_id: response.data.history_id
+        });
       } else {
         alert('Failed to save data');
       }
@@ -287,6 +307,7 @@ function CancerPredictionPage() {
       console.error(error);
     }
   };
+
 
   return (
     <div style={{ padding: 40 }}>
@@ -323,12 +344,13 @@ function CancerPredictionPage() {
             )}
           </Box>
           <Upload
+            fileList={fileList}
             accept='.fastq, .fastq.gz'
             maxCount={1}
             showUploadList={false}
             beforeUpload={file => {
               setFirstSetFileName(file.name);
-              formData.append('files', file);
+              setFileList([...fileList, file]);
               return false
             }}
           >
@@ -363,12 +385,13 @@ function CancerPredictionPage() {
             )}
           </Box>
           <Upload
+            fileList={fileList}
             accept='.fastq, .fastq.gz'
             maxCount={1}
             showUploadList={false}
             beforeUpload={file => {
               setSecondSetFileName(file.name);
-              formData.append('files', file);
+              setFileList([...fileList, file]);
               return false
             }}
           >
@@ -543,6 +566,7 @@ function CancerPredictionPage() {
           -  Colorspace FastQ
         </div>
       </AcceptedFormatsContainer2>
+
     </div>
   );
 }

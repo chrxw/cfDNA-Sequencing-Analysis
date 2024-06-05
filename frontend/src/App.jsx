@@ -131,7 +131,7 @@ function App() {
                 <Route path="/MarkDuplicates" element={<MarkDuplicatesPage />} />
                 <Route path="/Indexing" element={<IndexingPage />} />
                 <Route path="/CNVCalling" element={<CNVCallingPage />} />
-                <Route path="/HistoryPage2" element={<HistoryPage2 />} />
+                <Route path="/History2" element={<HistoryPage2 />} />
               </Routes>
             </div>
           </Content>

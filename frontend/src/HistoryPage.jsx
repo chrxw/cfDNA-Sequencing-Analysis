@@ -6,10 +6,11 @@ import { Pagination } from 'antd';
 
 // Styled component for the container
 const Container = styled.div`
-    min-height: 100vh;
+   
     width: 100%;
-    height: 100vh;
+    // height: 100vh;
     padding: 20px;
+    padding-top: 50px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -108,6 +109,7 @@ const Titletext = styled.div`
     &:nth-child(4) { flex: 1; }
 `;
 
+
 function HistoryPage() {
     const navigate = useNavigate();
     const [historyData, setHistoryData] = useState([]);
@@ -132,7 +134,7 @@ function HistoryPage() {
                 console.log('Response:', response.data); // Log the response data
                 const historyData = response.data.history_data;
                 // Navigate to HistoryPage2 with historyData as state
-                navigate('/HistoryPage2', { state: { historyData } });
+                navigate('/History2', { state: { historyData, sourcePage: '/History' } });
             })
             .catch(error => {
                 console.error('Error fetching history data:', error);
@@ -183,7 +185,12 @@ function HistoryPage() {
                 pageSize={pageSize}
                 total={historyData.length}
                 onChange={(page) => setCurrentPage(page)}
-                style={{ marginTop: '20px', marginLeft: '30px' }}
+                style={{
+                    marginTop: '20px',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    fontSize: '25px',
+                }}
             />
         </Container>
     );

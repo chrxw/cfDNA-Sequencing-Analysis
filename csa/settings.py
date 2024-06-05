@@ -162,3 +162,5 @@ SESSION_COOKIE_HTTPONLY = True
 STATICFILES_DIRS = (
     BASE_DIR.joinpath('frontend', 'dist'),
 )
+
+APPEND_SLASH = False

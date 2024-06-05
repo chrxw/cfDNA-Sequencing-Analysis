@@ -1,9 +1,11 @@
 import json
 import logging
 import paramiko
+import yaml
+import re
 
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Count, Max
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -76,7 +78,7 @@ def create_upload_data(user, file_name, file_path):
 ## Create History
 def create_history(sample_name, user, tool):
     history_id = generate_unique_history_id()
-    input_data_path = f'gs://csa_upload/Data/{sample_name}'
+    input_data_path = f'Data/{sample_name}'
     process_file_path = f'{input_data_path}/output'
     status = Status.objects.get(status_id='st001')
     history = History(
@@ -161,12 +163,13 @@ def upload_to_gcs(request):
 
             # Upload the file to GCS
             blob.upload_from_file(file)
-            file_path = f'gs://csa_upload/Data/{sample_name}/{file.name}'
+            file_path = f'Data/{sample_name}/{file.name}'
             create_upload_data(user, file.name, file_path)
 
         return JsonResponse({'status': 'success', 'message': 'Files uploaded successfully.'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
+
 
 ## Create project data
 logger = logging.getLogger(__name__)
@@ -207,16 +210,26 @@ def create_project_data_view(request):
 
     return JsonResponse({'message': 'Invalid request method.'}, status=405)
 
+
 ## Run Bioinformatics Pipeline
 def run_bioinformatics_pipeline(sample_name, history):
     try:
+        # Create config.yaml with the sample_name
+        config = {"sample_name": sample_name}
+        with open("/home/chrwan_ja/config.yaml", "w") as file:
+            yaml.dump(config, file)
+
         # Commands to be executed on the Linux VM
         commands = [
+            "source /home/chrwan_ja/anaconda3/bin/activate",
             "conda activate snakemake",
             f"mkdir -p /home/chrwan_ja/input/{sample_name}",
+            f"mkdir -p /home/chrwan_ja/input/{sample_name}/R1",
+            f"mkdir -p /home/chrwan_ja/input/{sample_name}/R2",
             f"mkdir -p /home/chrwan_ja/output/{sample_name}",
-            f"gsutil cp gs://csa_upload/Data/{sample_name}/* /home/chrwan_ja/input/{sample_name}",
-            f"snakemake -s /home/chrwan_ja/snakefile/snakemake.smk",
+            f"gsutil cp gs://csa_upload/Data/{sample_name}/R1* /home/chrwan_ja/input/{sample_name}/R1",
+            f"gsutil cp gs://csa_upload/Data/{sample_name}/R2* /home/chrwan_ja/input/{sample_name}/R2",
+            f"snakemake -s /home/chrwan_ja/snakefile/snakemake.smk --configfile /home/chrwan_ja/config.yaml",
             f"gsutil cp -r /home/chrwan_ja/output/{sample_name}/* gs://csa_upload/Data/{sample_name}/output",
             f"rm -rf /home/chrwan_ja/input/{sample_name}",
             f"rm -rf /home/chrwan_ja/output/{sample_name}"
@@ -225,12 +238,17 @@ def run_bioinformatics_pipeline(sample_name, history):
         # SSH into the VM and execute the commands
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname='34.124.164.13', username='chrwan_ja', key_filename='id_rsa')
+        ssh.connect(hostname='34.143.210.106', username='chrwan_ja', key_filename='id_rsa')
 
         for command in commands:
+            print(f"Executing: {command}")
             stdin, stdout, stderr = ssh.exec_command(command)
-            print(stdout.read().decode())
-            print(stderr.read().decode())
+            stdout_str = stdout.read().decode()
+            stderr_str = stderr.read().decode()
+            print(f"STDOUT: {stdout_str}")
+            print(f"STDERR: {stderr_str}")
+            if stderr_str:
+                raise Exception(f"Error executing command: {command}\n{stderr_str}")
 
         ssh.close()
 
@@ -238,13 +256,15 @@ def run_bioinformatics_pipeline(sample_name, history):
         complete_status = Status.objects.get(status_id='st002')
         history.status = complete_status
         history.save()
+        print("Pipeline completed successfully.")
 
     except Exception as e:
         # Update the history status to 'Stopped'
         stopped_status = Status.objects.get(status_id='st003')
         history.status = stopped_status
         history.save()
-        print(f"Error: {e}")
+        print(f"Pipeline execution failed: {e}")
+
 
 @csrf_exempt
 def trigger_pipeline(request):
@@ -307,9 +327,14 @@ def get_history_data(request):
 def list_files(bucket_name, prefix):
     """List all files in the GCS bucket with the given prefix."""
     client = storage.Client(project='cfdna-sequencing-analysis')
-    bucket = client.bucket('csa_upload')
+    bucket = client.bucket(bucket_name)
     blobs = bucket.list_blobs(prefix=prefix)
-    file_paths = [blob.name for blob in blobs if not blob.name.endswith('/')]
+    file_paths = []
+
+    for blob in blobs:
+        if not blob.name.endswith('/'):  # Exclude directories
+            file_paths.append(blob.name)
+
     return file_paths
 
 ### History detail
@@ -325,15 +350,16 @@ def display_history(request, history_id):
                 bucket_name = 'csa_upload'
                 input_prefix = history.input_data_path
                 input_files = list_files(bucket_name, input_prefix)
-                # Filter out subdirectories
-                input_files = [file for file in input_files if '/' not in file[len(input_prefix):]]
-            
+                # Filter out subdirectories and files from subdirectories
+                input_files = [file for file in input_files if file.startswith(input_prefix) and not '/' in file[len(input_prefix):].strip('/')]
+
             # List output files
             output_files = []
             if history.process_file_path:
+                bucket_name = 'csa_upload'
                 output_prefix = history.process_file_path
                 output_files = list_files(bucket_name, output_prefix)
-            
+
             history_entry = {
                 'history_id': history.history_id,
                 'sample_name': history.history_name,
@@ -343,6 +369,7 @@ def display_history(request, history_id):
                 'input_files': input_files,
                 'output_files': output_files,
             }
+
             return JsonResponse({'history_data': history_entry})
         except History.DoesNotExist:
             return JsonResponse({'error': 'History not found.'}, status=404)
@@ -350,8 +377,18 @@ def display_history(request, history_id):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'message': 'Invalid request method.'}, status=405)
-        
+    
 
+def download_file(request, filename):
+    storage_client = storage.Client(project='cfdna-sequencing-analysis')
+    bucket = storage_client.bucket('csa_upload')
+    blob = bucket.blob(filename)
+    file_content = blob.download_as_bytes()
+
+    response = HttpResponse(file_content, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+        
 
 # Dashboard
 @login_required

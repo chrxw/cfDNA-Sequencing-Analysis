@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { EditOutlined, DeleteOutlined,DownloadOutlined  } from '@ant-design/icons';
 import './App.css';
@@ -8,7 +9,7 @@ import { Button, message, Popconfirm } from 'antd';
 
 // Styled component for the container
 const Container = styled.div`
-    min-height: 1025px;
+    min-height: 1270px;
     width: 100%;
     height: 100vh; /* Full height of the viewport */
     padding: 20px; /* Add some padding */
@@ -61,13 +62,15 @@ const DateText = styled.div`
 
 // status running
 const StatusContainer = styled.div`
-    width: 91px;
+    width: ${(props) => props.width || '105px'};
+   
     height: 27px;
-    padding-left: 12px;
+    padding-left: 14px;
     padding-right: 13px;
     border-radius: 20px;
     overflow: hidden;
-    border: 1px solid #EF9745;
+    border: 1px solid ${(props) => props.borderColor};
+    
     display: flex;
     align-items: center;
     gap: 9px;
@@ -75,88 +78,18 @@ const StatusContainer = styled.div`
     margin-left: 55px;
     margin-right: 15px;
 `;
-// color="#86EF45">Completed   color="#EF4565">Stopped  color="#EF9745">Running
+
 // status running
 const StatusDot = styled.div`
     width: 10px;
     height: 10px;
-    background: #EF9745;
+    background: ${(props) => props.background};
     border-radius: 9999px;
 `;
 
 // status running
 const StatusText = styled.div`
-    color: #EF9745;
-    font-size: 20px;
-    font-family: Dongle;
-    font-weight: 400;
-    word-wrap: break-word;
-    margin-top: 3px;
-`;
-
-// status completed
-const StatusContainercomp = styled.div`
-    width: 110px;
-    height: 27px;
-    padding-left: 12px;
-    padding-right: 13px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid #86EF45;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-top: 10px;
-    margin-left: 55px;
-    margin-right: 15px;
-`;
-
-// status completed
-const StatusDotcomp = styled.div`
-    width: 10px;
-    height: 10px;
-    background: #86EF45;
-    border-radius: 9999px;
-`;
-
-// status completed
-const StatusTextcomp     = styled.div`
-    color: #86EF45;
-    font-size: 20px;
-    font-family: Dongle;
-    font-weight: 400;
-    word-wrap: break-word;
-    margin-top: 3px;
-`;
-
-// status stop
-const StatusContainerstop= styled.div`
-    width: 96px;
-    height: 27px;
-    padding-left: 12px;
-    padding-right: 13px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid #EF4565;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-top: 10px;
-    margin-left: 55px;
-    margin-right: 15px;
-`;
-
-// status stop
-const StatusDotstop = styled.div`
-    width: 10px;
-    height: 10px;
-    background: #EF4565;
-    border-radius: 9999px;
-`;
-
-// status stop
-const StatusTextstop    = styled.div`
-    color: #EF4565;
+    color: ${(props) => props.color};
     font-size: 20px;
     font-family: Dongle;
     font-weight: 400;
@@ -319,180 +252,129 @@ const StyledButtonload = styled(Button)`
 `;
 
 
+function HistoryPage2() {
+  const location = useLocation();
+  const { historyData } = location.state || {};
 
-// Function to handle download action
-const handleDownload = (fileName) => {
-    // Create a Blob with some text data
-    const blob = new Blob([`Content of ${fileName}`], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
+  // Check if historyData exists
+  if (!historyData) {
+    return <div>No history data available.</div>;
+  }
 
-    // Create a temporary anchor element
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Running':
+        return '#EF9745';
+      case 'Stopped':
+        return '#EF4565';
+      default:
+        return '#86EF45';
+    }
+  };
 
-    // Append the anchor to the body
-    document.body.appendChild(a);
-    // Programmatically click the anchor to trigger the download
-    a.click();
-    // Remove the anchor from the body
-    document.body.removeChild(a);
+  const handleDownload = async (fileName) => {
+    console.log('Attempting to download file:', fileName);
+    try {
+        const formattedFileName = fileName.endsWith('/') ? fileName.slice(0, -1) : fileName;
+        const response = await fetch(`/api/download_file/${formattedFileName}`);
+        if (!response.ok) {
+            throw new Error('Download failed');
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Download error:', error);
+    }
 };
-
-message.config({
-    className: 'custom-message',
-});
-
-const confirm = (e) => {
+  
+  const confirm = (e) => {
     console.log(e);
     message.success('Delete success');
-};
-
-const cancel = (e) => {
+  };
+  
+  const cancel = (e) => {
     console.log(e);
     message.error('Cancel Delete');
-};
+  };
 
-function HistoryPage2(props) {
-    // Destructure the props object to access location
-    const { location } = props;
+  const renderInputFiles = (files) => {
+    return files.map((file, index) => {
+      const fileName = file.split('/').pop();
+      return (
+        <InputFileName key={index}>
+          {fileName}
+          <StyledButtonload
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(file)}
+          />
+        </InputFileName>
+      );
+    });
+  };
 
-    // Check if location.state exists and contains historyData
-    if (!location || !location.state || !location.state.historyData) {
-        return <div>No history data available.</div>;
-    }
+  const renderOutputFiles = (files) => {
+    return files.map((file, index) => {
+      const fileName = file.split('/').pop();
+      return (
+        <OutputFileName key={index}>
+          {fileName}
+          <StyledButtonload
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(file)}
+          />
+        </OutputFileName>
+      );
+    });
+  };
 
-    // Check if historyData exists
-    if (!historyData) {
-        return <div style={{color: '#5F6C7B',
-            fontSize: '35px',
-            fontFamily: 'Dongle',
-            fontWeight: '300',
-            wordWrap: 'break-word',
-            marginTop: '20px',
-            marginLeft: '430px'}}>No history data available.</div>;
-    }
-
-    const { historyData } = location.state;
-
-    return (
-        <Container>
-           
-                <ContentContainer>
-                    <RightContainer>
-                        <Title>{historyData.sample_name}</Title>
-                        <RightText>{historyData.tool}</RightText>
-                        <DateText>{historyData.transaction_date}</DateText>
-
-                        {/* running status */}
-                        <StatusContainer>
-                            <StatusDot />
-                            <StatusText>Running</StatusText>
-                        </StatusContainer>
-
-                        {/* completed status */}
-                        {/* <StatusContainercomp>
-                            <StatusDotcomp />
-                            <StatusTextcomp>Completed</StatusTextcomp>
-                        </StatusContainercomp> */}
-
-                        {/* stop stasus */}
-                        {/* <StatusContainerstop>
-                            <StatusDotstop />
-                            <StatusTextstop>Stopped</StatusTextstop>
-                        </StatusContainerstop> */}
-
-                        <StyledButton icon={<EditOutlined />} />
-
-                        <Popconfirm
-                        overlayClassName="custom-popconfirm"
-                        placement="right"
-                        title="Delete the task"
-                        description="Are you sure to delete this History?"
-                        onConfirm={confirm}
-                        onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No" 
-                        >
-                        <StyledButton2 icon={<DeleteOutlined />} />
-                        </Popconfirm>
-
-                    </RightContainer>
-                    <InputContainer>
-                        <InputTitle>Input</InputTitle>
-                        <InputFileName>PID1234_R1.fastq</InputFileName>
-                        <InputFileName>PID1234_R2.fastq</InputFileName>
-                    </InputContainer>
-                    <OutputContainer>
-                        <OutputTitle>Output</OutputTitle>
-                        <OutputFileName>
-                        PID1234_R1.html
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234_R1.html')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234_R1.zip
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234_R1.zip')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234_R2.html
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234_R2.html')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234_R2.zip
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234_R2.zip')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234.bam
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234.bam')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234.bam.bai
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234.bam.bai')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234bam_markdup.bam
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234bam_markdup.bam')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                        PID1234ichorCNA.zip
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234ichorCNA.zip')}
-                        />
-                    </OutputFileName>
-                    <OutputFileName>
-                    PID1234report.html
-                        <StyledButtonload
-                            icon={<DownloadOutlined />}
-                            onClick={() => handleDownload('PID1234report.html')}
-                        />
-                    </OutputFileName>
-                    </OutputContainer>
-                </ContentContainer>
-          
-            {/* Your footer component */}
-        </Container>
-    );
+  return (
+      <Container>
+        <ContentContainer>
+          <RightContainer>
+            <Title>{historyData.sample_name}</Title>
+            <RightText>{historyData.tool_package}</RightText>
+            <DateText>{historyData.transaction_date}</DateText>
+  
+            {/* Status */}
+            <StatusContainer borderColor={getStatusColor(historyData.status)}>
+              <StatusDot background={getStatusColor(historyData.status)} />
+              <StatusText color={getStatusColor(historyData.status)}>
+                {historyData.status}
+              </StatusText>
+            </StatusContainer>
+  
+            <StyledButton icon={<EditOutlined />} />
+  
+            <Popconfirm
+              overlayClassName="custom-popconfirm"
+              placement="right"
+              title="Delete the task"
+              description="Are you sure to delete this History?"
+              onConfirm={confirm}
+              onCancel={cancel}
+              okText="Yes"
+              cancelText="No"
+            >
+              <StyledButton2 icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </RightContainer>
+          <InputContainer>
+            <InputTitle>Input</InputTitle>
+            {historyData.input_files && renderInputFiles(historyData.input_files)}
+          </InputContainer>
+          <OutputContainer>
+            <OutputTitle>Output</OutputTitle>
+            {historyData.output_files && renderOutputFiles(historyData.output_files)}
+          </OutputContainer>
+        </ContentContainer>
+      </Container>
+  );
 }
 export default HistoryPage2;
