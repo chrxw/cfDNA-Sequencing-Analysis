@@ -1,10 +1,10 @@
 ## Setting
 # Run R script
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/utils.R")
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/read_bamfile.R")
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/getPath.R") # path # tumor_label
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/read_text.R") # tumor_fraction
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/read_xlsx.R") # tumor_type
+source("/path/to/your/utils.R")
+source("/path/to/your/read_bamfile.R")
+source("/path/to/your/getPath.R") # path # tumor_label
+source("/path/to/your/read_text.R") # tumor_fraction
+source("/path/to/your/read_xlsx.R") # tumor_type
 
 # Receive value from CMD line
 args <- commandArgs(trailingOnly = TRUE)
@@ -75,7 +75,7 @@ sl.ratio <- sample.bamProfile$sample_profile[["S.L.Ratio"]]
 sl_ratio <- c(sl_ratio, sl.ratio)
 sl_ratio
   
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/cfdna_feature_1.R")
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/cfdna_feature_2_motif.R")
+source("/path/to/your/cfdna_feature_1.R")
+source("/path/to/your/cfdna_feature_2_motif.R")
 
-source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/data_export.R")
+source("/path/to/your/data_export.R")
