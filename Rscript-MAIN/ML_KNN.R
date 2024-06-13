@@ -113,8 +113,8 @@ plot.roc(knn_tuned_roc, col = "blue", main = "ROC Curve for Tuned KNN Model")
 # -------------------------------------------------------------------------#
 
 # Export result metrics
-saveRDS(knn_tuned_metrics_df, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/knn_tuned_metrics_df.rds")
+saveRDS(knn_tuned_metrics_df, "path/to/your/knn_tuned_metrics_df.rds")
 
 # Save the model
-saveRDS(knn_model, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Model/knn_model.rds")
-saveRDS(knn_tune_model, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Model/knn_tune_model.rds")
+saveRDS(knn_model, "path/to/your/knn_model.rds")
+saveRDS(knn_tune_model, "path/to/your/knn_tune_model.rds")
