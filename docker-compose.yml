@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    volumes:
+      - "./cfDNA Sequencing Analysis/frontend:/cfDNA Sequencing Analysis/frontend"
+    environment:
+      - NODE_ENV=production
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    volumes:
+      - "./cfDNA Sequencing Analysis:/cfDNA Sequencing Analysis"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - frontend
+    environment:
+      - DATABASE_URL=postgres://postgres:301295Kv*@34.124.230.188:5432/csa-db
+      - DEBUG=1
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+volumes:
+  postgres_data:

@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-from .views import project_data, get_tool, create_project_data_view, upload_to_gcs, trigger_pipeline, display_history, get_history_data, download_file, recent_tools
+from .views import project_data, get_tool, create_project_data_view, upload_to_gcs, trigger_pipeline, display_history, get_history_data, download_file, rename_sample, recent_tools
 
 urlpatterns = [
      path('project-data/', project_data, name='project_data'),
@@ -13,6 +13,7 @@ urlpatterns = [
      path('display_history/<str:history_id>/', display_history, name='display_history'),
      path('download_file/<str:filename>/', download_file, name='download_file'),
      re_path(r'^download_file/(?P<filename>.+)/?$', download_file, name='download_file'),
+     path('api/rename_sample', rename_sample, name='rename_sample'),
 
      path('recent-tools', recent_tools, name='recent_tools'),
 ]

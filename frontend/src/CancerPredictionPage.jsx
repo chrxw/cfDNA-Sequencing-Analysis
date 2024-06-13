@@ -294,11 +294,10 @@ function CancerPredictionPage() {
             console.error('Error fetching history data:', error);
           });
 
-        // Trigger the bioinformatics pipeline
-        await axios.post('/api/trigger-pipeline/', {
-          sample_name: sampleName,
-          history_id: response.data.history_id
-        });
+        // await axios.post('/api/trigger-pipeline/', {
+        //   sample_name: sampleName,
+        //   history_id: response.data.history_id
+        // });
       } else {
         alert('Failed to save data');
       }

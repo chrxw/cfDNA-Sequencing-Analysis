@@ -132,6 +132,7 @@ def get_tool(request, tool_id):
     except BioinformaticsTool.DoesNotExist:
         return JsonResponse({'message': 'Tool not found.'}, status=404)
 
+
 ## Upload file to google cloud storage
 @csrf_exempt
 def upload_to_gcs(request):
@@ -215,7 +216,7 @@ def create_project_data_view(request):
 def run_bioinformatics_pipeline(sample_name, history):
     try:
         # Create config.yaml with the sample_name
-        config = {"sample_name": sample_name}
+        config = {"workflow_name": sample_name}
         with open("/home/chrwan_ja/config.yaml", "w") as file:
             yaml.dump(config, file)
 
@@ -224,11 +225,8 @@ def run_bioinformatics_pipeline(sample_name, history):
             "source /home/chrwan_ja/anaconda3/bin/activate",
             "conda activate snakemake",
             f"mkdir -p /home/chrwan_ja/input/{sample_name}",
-            f"mkdir -p /home/chrwan_ja/input/{sample_name}/R1",
-            f"mkdir -p /home/chrwan_ja/input/{sample_name}/R2",
             f"mkdir -p /home/chrwan_ja/output/{sample_name}",
-            f"gsutil cp gs://csa_upload/Data/{sample_name}/R1* /home/chrwan_ja/input/{sample_name}/R1",
-            f"gsutil cp gs://csa_upload/Data/{sample_name}/R2* /home/chrwan_ja/input/{sample_name}/R2",
+            f"gsutil cp gs://csa_upload/Data/{sample_name}/* /home/chrwan_ja/input/{sample_name}",
             f"snakemake -s /home/chrwan_ja/snakefile/snakemake.smk --configfile /home/chrwan_ja/config.yaml",
             f"gsutil cp -r /home/chrwan_ja/output/{sample_name}/* gs://csa_upload/Data/{sample_name}/output",
             f"rm -rf /home/chrwan_ja/input/{sample_name}",
@@ -238,7 +236,7 @@ def run_bioinformatics_pipeline(sample_name, history):
         # SSH into the VM and execute the commands
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname='34.143.210.106', username='chrwan_ja', key_filename='id_rsa')
+        ssh.connect(hostname='34.87.139.45', username='chrwan_ja', key_filename='id_rsa')
 
         for command in commands:
             print(f"Executing: {command}")
@@ -388,6 +386,35 @@ def download_file(request, filename):
     response = HttpResponse(file_content, content_type='application/octet-stream')
     response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
+
+
+@csrf_exempt
+def rename_sample(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            history_id = data.get('history_id')
+            new_sample_name = data.get('new_sample_name')
+
+            if not history_id or not new_sample_name:
+                return JsonResponse({'error': 'Invalid input'}, status=400)
+
+            # Validate new_sample_name
+            if len(new_sample_name) > 50 or not re.match(r'^[a-zA-Z0-9-_]+$', new_sample_name):
+                return JsonResponse({'error': 'Invalid sample name'}, status=400)
+
+            history = History.objects.get(history_id=history_id)
+            history.history_name = new_sample_name
+            history.save()
+
+            return JsonResponse({'success': 'Sample name updated successfully'})
+
+        except History.DoesNotExist:
+            return JsonResponse({'error': 'History record not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
         
 
 # Dashboard

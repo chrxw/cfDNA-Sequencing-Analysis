@@ -201,7 +201,7 @@ function DashboardPage() {
                 console.log('Response:', response.data); // Log the response data
                 const historyData = response.data.history_data;
                 // Navigate to HistoryPage2 with historyData as state
-                navigate('/HistoryPage2', { state: { historyData } });
+                navigate('/History2', { state: { historyData } });
             })
             .catch(error => {
                 console.error('Error fetching history data:', error);

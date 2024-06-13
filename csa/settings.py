@@ -164,3 +164,7 @@ STATICFILES_DIRS = (
 )
 
 APPEND_SLASH = False
+
+# Read the secret key from the Docker secret
+# with open('/run/secrets/django_secret_key') as f:
+#     SECRET_KEY = f.read().strip()

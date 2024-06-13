@@ -1,11 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { EditOutlined, DeleteOutlined,DownloadOutlined  } from '@ant-design/icons';
+import { Button, message, Popconfirm, Modal, Input } from 'antd';
+import { EditOutlined, CloseOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import './App.css';
-// import type { PopconfirmProps } from 'antd';
-import { Button, message, Popconfirm } from 'antd';
-
 
 // Styled component for the container
 const Container = styled.div`
@@ -239,7 +237,6 @@ const OutputFileName = styled.div`
 `;
 
 
-
 // Styled component for the button
 const StyledButtonload = styled(Button)`
     
@@ -255,6 +252,9 @@ const StyledButtonload = styled(Button)`
 function HistoryPage2() {
   const location = useLocation();
   const { historyData } = location.state || {};
+
+  // const [isModalVisible, setIsModalVisible] = useState(false);
+  // const [newSampleName, setNewSampleName] = useState('');
 
   // Check if historyData exists
   if (!historyData) {
@@ -334,47 +334,123 @@ function HistoryPage2() {
     });
   };
 
+  const showRenameModal = () => {
+    setNewSampleName(historyData.sample_name);
+    setIsModalVisible(true);
+  };
+
+  const handleRename = async () => {
+    if (newSampleName.length > 50 || !/^[a-zA-Z0-9-_]+$/.test(newSampleName)) {
+      message.error('Invalid sample name. Please adhere to the naming rules.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/rename_sample`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ history_id: historyData.history_id, new_sample_name: newSampleName }),
+      });
+
+      if (response.ok) {
+        message.success('Sample name updated successfully');
+        setIsModalVisible(false);
+        // Optionally refresh the page or update the state to reflect the new name
+      } else {
+        throw new Error('Rename failed');
+      }
+    } catch (error) {
+      console.error('Rename error:', error);
+      message.error('Rename failed');
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
-      <Container>
-        <ContentContainer>
-          <RightContainer>
-            <Title>{historyData.sample_name}</Title>
-            <RightText>{historyData.tool_package}</RightText>
-            <DateText>{historyData.transaction_date}</DateText>
-  
-            {/* Status */}
-            <StatusContainer borderColor={getStatusColor(historyData.status)}>
-              <StatusDot background={getStatusColor(historyData.status)} />
-              <StatusText color={getStatusColor(historyData.status)}>
-                {historyData.status}
-              </StatusText>
-            </StatusContainer>
-  
-            <StyledButton icon={<EditOutlined />} />
-  
-            <Popconfirm
-              overlayClassName="custom-popconfirm"
-              placement="right"
-              title="Delete the task"
-              description="Are you sure to delete this History?"
-              onConfirm={confirm}
-              onCancel={cancel}
-              okText="Yes"
-              cancelText="No"
-            >
-              <StyledButton2 icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </RightContainer>
-          <InputContainer>
-            <InputTitle>Input</InputTitle>
-            {historyData.input_files && renderInputFiles(historyData.input_files)}
-          </InputContainer>
-          <OutputContainer>
-            <OutputTitle>Output</OutputTitle>
-            {historyData.output_files && renderOutputFiles(historyData.output_files)}
-          </OutputContainer>
-        </ContentContainer>
-      </Container>
+    <Container>
+      <ContentContainer>
+        <RightContainer>
+          <Title>{historyData.sample_name}</Title>
+          <RightText>{historyData.tool_package}</RightText>
+          <DateText>{historyData.transaction_date}</DateText>
+
+          {/* Status */}
+          <StatusContainer borderColor={getStatusColor(historyData.status)}>
+            <StatusDot background={getStatusColor(historyData.status)} />
+            <StatusText color={getStatusColor(historyData.status)}>
+              {historyData.status}
+            </StatusText>
+          </StatusContainer>
+
+          <StyledButton icon={<EditOutlined />} onClick={showRenameModal} />
+
+          <Popconfirm
+            overlayClassName="custom-popconfirm"
+            placement="right"
+            title="Delete the task"
+            description="Are you sure to delete this History?"
+            onConfirm={confirm}
+            onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <StyledButton2 icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </RightContainer>
+        <InputContainer>
+          <InputTitle>Input</InputTitle>
+          {historyData.input_files && renderInputFiles(historyData.input_files)}
+        </InputContainer>
+        <OutputContainer>
+          <OutputTitle>Output</OutputTitle>
+          {historyData.output_files && renderOutputFiles(historyData.output_files)}
+        </OutputContainer>
+      </ContentContainer>
+
+      {/* <Modal
+      visible={isModalVisible}
+      onCancel={handleCancel}
+      footer={null}
+      maskStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+      title={
+        <div style={{ fontSize: '30px', fontFamily: 'Dongle', fontWeight: 400 }}>
+          Rename {historyData.sample_name}
+          <CloseOutlined onClick={handleCancel} style={{ float: 'right', cursor: 'pointer' }} />
+        </div>
+      }
+      >
+        <div style={{ fontSize: '30px', fontFamily: 'Dongle', fontWeight: 400, color: '#5f6c7b' }}>
+          Rename this analysis record. You provide a name no longer than 50 characters in length, using only letters, numbers, dashes, and underscores.
+        </div>
+        <Input
+          value={newSampleName}
+          onChange={(e) => setNewSampleName(e.target.value)}
+          placeholder={`New ${historyData.sample_name}`}
+          maxLength={50}
+          style={{ marginTop: '10px' }}
+        />
+        <div style={{ marginTop: '20px', textAlign: 'right' }}>
+          <Button
+            onClick={handleRename}
+            style={{ borderColor: '#5f6c7b', borderRadius: '10px', backgroundColor: '#fffffe', color: '#094067', marginRight: '10px' }}
+          >
+            Save
+          </Button>
+          <Button
+            onClick={handleCancel}
+            style={{ borderRadius: '10px', backgroundColor: '#ef4565', color: '#fffffe' }}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Modal> */}
+
+    </Container>
   );
 }
 export default HistoryPage2;
