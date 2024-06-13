@@ -111,8 +111,8 @@ plot.roc(svm_tuned_roc, col = "blue", main = "ROC Curve for Tuned SVM Model")
 # -------------------------------------------------------------------------#
 
 # Export result metrics
-saveRDS(svm_tuned_metrics_df, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/svm_tuned_metrics_df.rds")
+saveRDS(svm_tuned_metrics_df, "path/to/your/svm_tuned_metrics_df.rds")
 
 # Save the model
-saveRDS(svm_model, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Model/svm_model.rds")
-saveRDS(svm_tune_model, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Model/svm_tune_model.rds")
+saveRDS(svm_model, "path/to/your/svm_model.rds")
+saveRDS(svm_tune_model, "path/to/your/svm_tune_model.rds")
