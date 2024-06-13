@@ -1,11 +1,11 @@
 ## Original Sample
 # Define the main directory path
-original_directory <- "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/dataML"
+original_directory <- "path/to/your/file" # path
 
 # List all files in the main directory and its subdirectories
 og_all_files <- list.files(path = original_directory, recursive = TRUE, full.names = TRUE)
 
-# Filter files to include only those matching the pattern "*_plasma*_MD.bam"
+# Filter files to include only those matching the pattern
 sample_dir <- og_all_files[grep("_plasma.*_MD\\.bam$", og_all_files)]
 sample_dir <- sample_dir[!grepl("_full", sample_dir)]
 
@@ -13,8 +13,8 @@ sample_dir <- sample_dir[!grepl("_full", sample_dir)]
 sample_dir
 
 ## Path list for control & patient
-# Filter paths containing "OE0290-PED_0LB"
-ctr_part <- grepl("OE0290-PED_0LB", sample_dir)
+# Filter paths containing sample ID
+ctr_part <- grepl("your/sample/ID/structure", sample_dir)
 control_dir <- sample_dir[ctr_part]
 patient_dir <- sample_dir[!ctr_part]
 
@@ -33,15 +33,15 @@ base_dir
 
 ## Resample Sample
 # Define the main directory path
-resample_directory <- "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/ControlResampling"
+resample_directory <- "path/to/your/file"
 
 # List all files in the main directory and its subdirectories
 re_all_files <- list.files(path = resample_directory, recursive = TRUE, full.names = TRUE)
 
-# Filter files to include only those matching the pattern "*_plasma*_MD.bam"
+# Filter files to include only those matching the pattern
 library(gtools)
 
-resample_dir <- re_all_files[grep(".+/control_[0-9]+/control_hg38_[0-9]+_MD\\.bam$", re_all_files)]
+resample_dir <- re_all_files[grep("your/regex/structure\\.bam$", re_all_files)]
 resample_dir <- mixedsort(resample_dir)
 
 # Show the list of paths
@@ -75,7 +75,7 @@ label_tumor
 
 # -------------------------------------------------------------------------#
 
-file_conn <- file("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/all_dir.txt", "w")
+file_conn <- file("path/to/your/file.txt", "w")
 
 # Write each element of the list to the file
 for (item in all_dir){
@@ -90,7 +90,7 @@ close(file_conn)
 all_dir_df <- data.frame(path = all_dir)
 
 # Define the file path for the text file
-print_file_path <- "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Path/all_dir.txt"
+print_file_path <- "path/to/your/file.txt"
 
 # Export the paths to a text file
 writeLines(all_dir, con = print_file_path)
