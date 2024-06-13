@@ -1,12 +1,12 @@
 ## Get ichorCNA
 # Define directory path
-txt_directory <- "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/dataML"
+txt_directory <- "path/to/your/file" # ichorCNA params.txt
 
 # List all files in the directory and its subdirectories
 ichorcna <- list.files(path = txt_directory, recursive = TRUE, full.names = TRUE)
 
 # Filter files to include only those matching the pattern
-ichorPath <- ichorcna[grep(".+/OE0290-PED_[0-9]+LB-[0-9]+/plasma-[0-9]+-[0-9]+/ichorCNA/OE0290-PED_[0-9]+LB-[0-9]+_plasma-[0-9]+-[0-9]+.params.txt", ichorcna)]
+ichorPath <- ichorcna[grep("your/regex/file/structure.params.txt", ichorcna)]
 
 # Show the list of paths
 ichorPath
