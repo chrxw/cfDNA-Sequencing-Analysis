@@ -2,7 +2,7 @@ library(recipes)
 
 ## Data Preprocessing
 # From One-hot Encoding & Z-score Standardization
-significant_df <- readRDS("gs://home/chrwan_ja/Rscript/significant_df.rds")
+significant_df <- readRDS("/home/chrwan_ja/Rscript/significant_df.rds")
 
 new_dataframe <- new_df_X[, colnames(new_df_X) %in% colnames(significant_df)]
 new_dataframe <- new_dataframe[, colnames(significant_df)[colnames(significant_df) %in% colnames(new_df_X)]]
