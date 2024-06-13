@@ -115,8 +115,8 @@ plot.roc(xgb_tuned_roc, col = "blue", main = "ROC Curve for Tuned XGBoost Model"
 # -------------------------------------------------------------------------#
 
 # Export result metrics
-saveRDS(xgb_tuned_metrics_df, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/xgb_tuned_metrics_df.rds")
+saveRDS(xgb_tuned_metrics_df, "path/to/your/xgb_tuned_metrics_df.rds")
 
 # Save the models
-saveRDS(xgb_model, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Model/xgb_model.rds")
-saveRDS(xgb_tune_model, "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/Model/xgb_tune_model.rds")
+saveRDS(xgb_model, "path/to/your/xgb_model.rds")
+saveRDS(xgb_tune_model, "path/to/your/xgb_tune_model.rds")
