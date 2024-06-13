@@ -20,4 +20,4 @@ names(all_feature) <- column_names
 cfdna_df <- data.frame(all_feature)
 
 # Export data to RDS file
-saveRDS(cfdna_df, file = paste0("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/RDS/cfdna_", sample_counter, ".rds"))
+saveRDS(cfdna_df, file = paste0("path/to/your/cfdna_", sample_counter, ".rds"))
