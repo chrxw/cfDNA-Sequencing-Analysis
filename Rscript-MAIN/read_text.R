@@ -1,8 +1,15 @@
 ## Get ichorCNA
-# Define the pattern for ichorCNA file paths
-ichor_pattern <- paste0(user_filenames, ".*\\.params\\.txt$")
-ichor_files <- list.files(path = user_dir, recursive = TRUE, full.names = FALSE, pattern = ichor_pattern)
-ichor_file_path <- file.path(root_path, user_filenames, ichor_files[1])
+# Define directory path
+txt_directory <- "/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/dataML"
+
+# List all files in the directory and its subdirectories
+ichorcna <- list.files(path = txt_directory, recursive = TRUE, full.names = TRUE)
+
+# Filter files to include only those matching the pattern
+ichorPath <- ichorcna[grep(".+/OE0290-PED_[0-9]+LB-[0-9]+/plasma-[0-9]+-[0-9]+/ichorCNA/OE0290-PED_[0-9]+LB-[0-9]+_plasma-[0-9]+-[0-9]+.params.txt", ichorcna)]
+
+# Show the list of paths
+ichorPath
 
 # -------------------------------------------------------------------------#
 
@@ -10,7 +17,7 @@ ichor_file_path <- file.path(root_path, user_filenames, ichor_files[1])
 tumor_fraction <- list()
 
 # Iterate over each file path in ichorPath
-for (textpath in ichor_file_path) {
+for (textpath in ichorPath) {
   # Open the file for reading
   lines <- readLines(textpath)
   

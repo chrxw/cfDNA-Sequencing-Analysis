@@ -15,14 +15,15 @@ model_type <- names(models)
 # -------------------------------------------------------------------------#
 
 # Load new data provided by the user
-user_data <- readRDS("gs://home/chrwan_ja/", user_filenames, "/output/", 
-                    user_filenames, ".rds")
+user_data <- readRDS(cfdna_df, file = paste0("gs://home/chrwan_ja/", user_filenames, "/output/", 
+                                             user_filenames, "_BAM.rds"))
 
 # Mock-up tumor_label for pre-processing
-user_data$tumor_label <- "tumor"
+user_data_X <- user_data
+user_data_X$tumor_label <- "tumor"
 
 dataframe_X <- readRDS("gs://home/chrwan_ja/Rscript/dataframe_X.rds")
-combined_data <- bind_rows(dataframe_X, user_data)
+combined_data <- bind_rows(dataframe_X, user_data_X)
 
 new_df <- combined_data[, !names(combined_data) %in% c("sample_id")]
 new_df_X <- new_df[, !names(new_df) %in% c("tumor_type")]
@@ -78,8 +79,8 @@ for (model in names(all_predictions)) {
 }
 
 # Export data to RDS file
-saveRDS(prediction_df, file = paste0("gs://home/chrwan_ja/", user_filenames, "/output/", 
-                                     user_filenames, "result", ".rds"))
+saveRDS(prediction_df, file = paste0("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/test", user_filenames, "/output/", 
+                                     user_filenames, "_result", ".rds"))
 
-# Export PDF
-source("gs://home/chrwan_ja/Rscript/user_pdf.R")
+# Export PDF & TSV
+source("/omics/odcf/analysis/OE0290_projects/pediatric_tumor/whole_genome_sequencing_CRAsnakemake/HDS_project/MachineLearning/R_setting/user_export.R")
