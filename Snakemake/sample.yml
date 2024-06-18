@@ -1,5 +1,5 @@
 samples_config:
-  workflow_name: 'test_flow'
+  workflow_name: '{sample_name}'
   PATIENTS: '1LB-008P-01'
   PLASMAS: 'plasma-01'
   SAMPLES: ['1LB-008P-01']
