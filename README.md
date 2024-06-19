@@ -35,6 +35,7 @@ Before starting the project, the following prerequisites installed:
 - [Node.js](https://nodejs.org/)
 - [React](https://reactjs.org/)
 - [Vite](https://vitejs.dev/)
+- [Privacy and Data Security](#privacy-and-data-security)
 
 ## Technologies
 
@@ -250,3 +251,6 @@ Divided into 3 steps as follows.
 ## Inspiration
 
 Frontend design inspired by [Galaxy](https://usegalaxy.org/) and [EPI2ME](https://github.com/epi2me-labs)
+
+## Privacy and Data Security
+Certain source code files within this project cannot be shared because the project involves the collection of actual circulating cell-free DNA (cfDNA) data from patients, which constitutes sensitive personal information. However, we can provide a comprehensive explanation of the web application's functionality based on the available source code.
