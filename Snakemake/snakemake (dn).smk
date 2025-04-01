@@ -1,5 +1,5 @@
-configfile: "/home/chrwan_ja/config/config.yml"
-configfile: "/home/chrwan_ja/config/sample.yml"
+configfile: "/path/to/config.yml"
+configfile: "/path/to/sample.yml"
 
 PATIENTS = config['samples_config']['PATIENTS']
 PLASMAS = config['samples_config']['PLASMAS']
@@ -21,8 +21,6 @@ rule fastqc:
 	output:
 		html="{sample}_{pair}_fastqc.html",
 		zip="{sample}_{pair}_fastqc.zip"
-	conda:
-		"/home/chrwan_ja/env/quality_control.yml"
 	params:
 		outdir=expand("{directory}/{workflow_name}/{patient}/{plasma}/fastqc", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES, patient=PATIENTS, plasma=PLASMAS),
 		all=expand("{directory}/{workflow_name}/{patient}/{plasma}/fastqc.zip", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES, patient=PATIENTS, plasma=PLASMAS)
@@ -44,14 +42,11 @@ if num_bam_files == 1:
 			expand("{directory_fastq}/{workflow_name}/{sample}_R2.fastq.gz", workflow_name=WORKFLOW_NAME, sample=SAMPLES , directory_fastq=DIRECTORY_FASTQ)
 		output:
 			expand("{directory}/{workflow_name}/{sample}.bam", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES)
-		conda:
-			"/home/chrwan_ja/env/mapping.yml"
 		threads: 8
 		shell:
 			"""
 			bwa mem -M -t {threads} {input[0]} {input[1]} {input[2]} | samtools view -bSu - | samtools sort -o {output}
 			"""
-
 	rule rename:
 		input:
 			expand("{directory}/{workflow_name}/{sample}.bam", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES)
@@ -71,8 +66,6 @@ elif num_bam_files == 2:
 			expand("{directory_fastq}/{workflow_name}/{sample}_R2.fastq.gz", sample=SAMPLES[0] ,workflow_name=WORKFLOW_NAME, directory_fastq=DIRECTORY_FASTQ)
 		output:
 			expand("{directory}/{workflow_name}/{sample}.bam", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES[0])
-		conda:
-			"/home/chrwan_ja/env/mapping.yml"
 		threads: 8
 		shell:
 			"""
@@ -85,8 +78,6 @@ elif num_bam_files == 2:
 			expand("{directory_fastq}/{workflow_name}/{sample}_R2.fastq.gz", sample=SAMPLES[1] , workflow_name=WORKFLOW_NAME, directory_fastq=DIRECTORY_FASTQ)
 		output:
 			expand("{directory}/{workflow_name}/{sample}.bam", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES[1])
-		conda:
-			"/home/chrwan_ja/env/mapping.yml"
 		threads: 8
 		shell:
 			"""
@@ -99,8 +90,6 @@ elif num_bam_files == 2:
 			expand("{directory}/{workflow_name}/{sample}.bam", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, sample=SAMPLES)
 		output:
 			expand("{directory}/{workflow_name}/{patient}_{plasma}.bam", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, plasma=PLASMAS, patient=PATIENTS)
-		conda:
-			"/home/chrwan_ja/env/mark_duplicate.yml"
 		shell:
 			"""
 			picard MergeSamFiles I={input[0]} I={input[1]} O={output}
@@ -114,8 +103,6 @@ rule process_bam:
 		bam_md="{directory}/{workflow_name}/{patient}_{plasma}_MD.bam",
 		metrics="{directory}/{workflow_name}/{patient}_{plasma}_MD.txt",
 		bam_index="{directory}/{workflow_name}/{patient}_{plasma}_MD.bam.bai"
-	conda:
-		"/home/chrwan_ja/env/mark_duplicate.yml"
 	shell:
 		"""
 		picard MarkDuplicates I={input.bam} O={output.bam_md} M={output.metrics} && samtools index {output.bam_md} {output.bam_index}
@@ -126,8 +113,6 @@ rule read_counter:
 		index=expand("{directory}/{workflow_name}/{patient}_{plasma}_MD.bam",workflow_name=WORKFLOW_NAME, directory=DIRECTORY, patient=PATIENTS, plasma=PLASMAS)
 	output:
 		wig=expand("{directory}/{workflow_name}/{patient}_{plasma}.wig", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, patient=PATIENTS, plasma=PLASMAS)
-	conda:
-		"/home/chrwan_ja/env/cnv_calling.yml"	
 	params:
 		window_size=config["binSize"],
 		quality="20",
@@ -150,8 +135,6 @@ rule ichorCNA:
 		seg=expand("{directory}/{workflow_name}/ichorCNA/{patient}_{plasma}.seg", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, patient=PATIENTS, plasma=PLASMAS),
 		rdata=expand("{directory}/{workflow_name}/ichorCNA/{patient}_{plasma}.RData", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, patient=PATIENTS, plasma=PLASMAS),
 		zip=expand("{directory}/{workflow_name}/ichorCNA.zip", workflow_name=WORKFLOW_NAME, directory=DIRECTORY, patient=PATIENTS, plasma=PLASMAS)
-	conda:
-		"/home/chrwan_ja/env/cnv_calling.yml"
 	params:
 		rscript=config["ichorCNA_rscript"],
 		id=expand("{patient}_{plasma}",patient=PATIENTS, plasma=PLASMAS),
