@@ -53,28 +53,6 @@ Before starting the project, the following prerequisites installed:
 
 - **PostgreSQL**: Used as the database system for storing and managing bioinformatics data and application metadata.
 
-## Installation
-3. **Web application development**
-
-    The steps for the web application development process are as follows:
-
-    1. **Create a Database**: Set up [PostgreSQL](https://www.postgresql.org/) for storing and managing bioinformatics data and application metadata.
-
-    2. **Create a Cloud Storage** (optional): Use [Google Cloud Storage](https://cloud.google.com/storage?hl=th) for storing large bioinformatics datasets.
-
-    3. **Create a Backend**: Use Django for developing the backend, managing APIs, and handling server-side logic.
-
-    4. **Create a Frontend**: Use React for developing the frontend, creating dynamic and interactive user interfaces.
-
-    5. **Deployment**: Deploy the web application using Google Cloud Platform's Cloud Run for scalable serverless execution.
-
-    #### Notes:
-    
-    For web application development, there are quite a lot of packages used. It might be better to have separate files for frontend and backend packages. However, here is a brief list:
-
-    - Backend Packages: Django, djangorestframework, psycopg2, etc.
-    - Frontend Packages: React, Axios, react-router-dom, etc.
-
 ## Inspiration
 
 Frontend design inspired by [Galaxy](https://usegalaxy.org/) and [EPI2ME](https://github.com/epi2me-labs)
