@@ -3,18 +3,18 @@ chrs: chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14
 binSize:  1000000 
 
 ## ichorCNA params ##
-ichorCNA_rscript: /home/chrwan_ja/ichorCNA/scripts/runIchorCNA.R
+ichorCNA_rscript: /path/to/ichorCNA/scripts/runIchorCNA.R
 
 ichorCNA_ploidy:  c(2,3)
 ichorCNA_normal: c(0.8,0.9,0.95,0.99,0.995)
-ichorCNA_normalPanel: /home/chrwan_ja/ichorCNA/PoN_umi_1Mb_97_NIPTeR_median.rds
+ichorCNA_normalPanel: /path/to/ichorCNA/PoN_umi_1Mb_97_NIPTeR_median.rds
 
 ichorCNA_maxCN:  4
-ichorCNA_gcWig: /home/chrwan_ja/ichorCNA/inst/extdata/gc_hg38_1000kb.wig
+ichorCNA_gcWig: /path/to/ichorCNA/inst/extdata/gc_hg38_1000kb.wig
 
-ichorCNA_mapWig: /home/chrwan_ja/ichorCNA/inst/extdata/map_hg38_1000kb.wig
+ichorCNA_mapWig: /path/to/ichorCNA/inst/extdata/map_hg38_1000kb.wig
 
-ichorCNA_centromere: /home/chrwan_ja/ichorCNA/inst/extdata/GRCh38.GCA_000001405.2_centromere_acen.txt
+ichorCNA_centromere: /path/to/ichorCNA/inst/extdata/GRCh38.GCA_000001405.2_centromere_acen.txt
 
 ichorCNA_includeHOMD: TRUE
 ichorCNA_chrs:  paste0('chr', c(1:22, \"X\"))
