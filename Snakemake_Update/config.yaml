@@ -1,0 +1,36 @@
+configs:
+        directory_fastq: "fastq_performance"
+        directory_output: "output_10_performance"
+        ref_genome: "/lustre/fs0/storage/u812009/analysis/public_datasets/refgenome/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fna"
+
+##wig params ##
+chrs: chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX
+binSize: 1000000 
+
+## ichorCNA params ##
+ichorCNA:
+        ichorCNA_rscript: /lustre/fs0/storage/u812009/analysis/public_datasets/ichorCNA/scripts/runIchorCNA.R
+
+        ichorCNA_ploidy: c(2,3)
+        ichorCNA_normal: c(0.8,0.9,0.95,0.99,0.995)
+        ichorCNA_normalPanel: /lustre/fs0/storage/u812009/analysis/public_datasets/EGAD00001005339_control_output/PoN_EGAD00001005339_median.rds
+
+        ichorCNA_maxCN: 4
+        ichorCNA_gcWig: /lustre/fs0/storage/u812009/analysis/public_datasets/ichorCNA/inst/extdata/gc_hg38_1000kb.wig
+
+        ichorCNA_mapWig: /lustre/fs0/storage/u812009/analysis/public_datasets/ichorCNA/inst/extdata/map_hg38_1000kb.wig
+
+        ichorCNA_centromere: /lustre/fs0/storage/u812009/analysis/public_datasets/ichorCNA/inst/extdata/GRCh38.GCA_000001405.2_centromere_acen.txt
+
+        ichorCNA_includeHOMD: TRUE
+        ichorCNA_chrs: paste0('chr', c(1:22, \"X\"))
+        ichorCNA_chrTrain:  c(1:18,20:22)
+        ichorCNA_estimateNormal:  TRUE
+        ichorCNA_estimatePloidy:  TRUE
+        ichorCNA_estimateScPrevalence: TRUE
+        ichorCNA_scStates:  c(1,3)
+        ichorCNA_txnE:  0.9999
+        ichorCNA_txnStrength:  10000
+        ichorCNA_genomeStyle:  UCSC
+        ichorCNA_minSegmentBin: 20
+        ichorCNA_altFracThreshold: 0.05
