@@ -216,7 +216,7 @@ If the associated web application is used, the following technologies are requir
 The workflow demonstrated:
 
 - Automated and reproducible processing of low-coverage whole-genome sequencing (lcWGS) data from plasma cfDNA.
-- Integration of sequencing quality control, read alignment, BAM processing, copy-number analysis, and fragmentomic feature extraction within a single Snakemake workflow.
+- Integration of sequencing quality control, read alignment, BAM processing, and copy-number analysis within a single Snakemake workflow.
 - Scalable cohort-level processing through parallel execution using Snakemake.
 - Approximately **4.4-fold reduction in total processing time** when using parallel Snakemake execution compared with sequential execution across 25 samples.
 - Integration of cfDNA fragmentomic features with supervised machine learning for pediatric cancer detection and subtype classification.
