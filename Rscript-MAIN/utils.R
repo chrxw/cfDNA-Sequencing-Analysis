@@ -1,4 +1,4 @@
-util.get_sliding_windows = function(binsize=1000, genome="hg19"){
+util.get_sliding_windows = function(binsize=1000, genome="hg38"){
   ### stop if given reference name is neither hg19 nor mm10
   if(! genome %in% c("hg19","hg38","mm10"))
     stop("Only hg19, hg38 or mm10 genome are possible")

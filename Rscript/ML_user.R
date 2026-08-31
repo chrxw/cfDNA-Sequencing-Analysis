@@ -4,7 +4,7 @@ library(caret)
 library(recipes)
 
 # Model path
-model_path <- "/home/chrwan_ja/model"
+model_path <- "D:/CPE407/THESIS/Github"
 ml_model <- list.files(model_path, pattern = "\\.rds$", full.names = TRUE)
 
 # Load model
@@ -15,21 +15,21 @@ model_type <- names(models)
 # -------------------------------------------------------------------------#
 
 # Load new data provided by the user
-user_data <- readRDS(cfdna_df, file = paste0("/home/chrwan_ja/output/", user_filenames, "/", 
-                                             user_filenames, "_BAM.rds"))
+user_data <- readRDS(paste0("D:/CPE407/THESIS/New Data/", user_filenames, "/", 
+                            user_filenames, "_BAM.rds"))
 
 # Mock-up tumor_label for pre-processing
 user_data_X <- user_data
 user_data_X$tumor_label <- "tumor"
 
-dataframe_X <- readRDS("/home/chrwan_ja/Rscript/dataframe_X.rds")
+dataframe_X <- readRDS("D:/GitHub/cfDNA-Sequencing-Analysis/Rscript/dataframe_X.rds")
 combined_data <- bind_rows(dataframe_X, user_data_X)
 
 new_df <- combined_data[, !names(combined_data) %in% c("sample_id")]
 new_df_X <- new_df[, !names(new_df) %in% c("tumor_type")]
 
 # Pre-processing
-source("/home/chrwan_ja/Rscript/ML_user_preprocess.R")
+source("D:/GitHub/cfDNA-Sequencing-Analysis/Rscript/ML_user_preprocess.R")
 
 # Get only user_data
 user_df <- tail(processed_dataframe, 1)
@@ -83,4 +83,4 @@ saveRDS(prediction_df, file = paste0("/home/chrwan_ja/output/", user_filenames, 
                                      user_filenames, "_result", ".rds"))
 
 # Export PDF & TSV & HTML
-source("/home/chrwan_ja/Rscript/user_export.R")
+source("D:/GitHub/cfDNA-Sequencing-Analysis/Rscript/user_export.R")
