@@ -1,80 +1,258 @@
-# Django Session-Based Authentication with React and Vite Tutorial
+# Automated Snakemake Workflow for cfDNA Fragmentomics and Machine Learning-Based Pediatric Cancer Classification
 
-## | Made for the Bek Brace YT channel Tutorial - October 27th, 2023 |  
-
-Welcome to our comprehensive tutorial on building a secure web authentication system using Django, React, and Vite. In this tutorial, we'll guide you through the process of creating a robust session-based authentication system and discuss essential security concepts.
+An automated and reproducible Snakemake-based workflow for low-coverage whole-genome sequencing (lcWGS) analysis of circulating cell-free DNA (cfDNA), integrating quality control, read alignment, BAM processing, copy-number analysis, fragmentomic feature extraction, and machine learning-based pediatric cancer classification.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Workflow Overview](#workflow-overview)
+- [Study Cohort](#study-cohort)
 - [Prerequisites](#prerequisites)
-- [Tutorial Overview](#tutorial-overview)
-- [Getting Started](#getting-started)
-- [Key Features](#key-features)
-- [Security Considerations](#security-considerations)
-- [Contributing](#contributing)
+- [Technologies](#technologies)
+- [Key Findings](#key-findings)
+- [Limitations](#limitations)
+- [Privacy and Data Security](#privacy-and-data-security)
+- [Acknowledgement](#acknowledgement)
 - [License](#license)
+
+---
 
 ## Introduction
 
-In today's web development landscape, security is paramount. This tutorial aims to provide a step-by-step guide to implementing a session-based authentication system with Django and React using the Vite build tool. We'll cover key concepts and best practices to ensure the security of your web applications.
+Pediatric cancers, particularly brain tumors and sarcomas, present substantial diagnostic challenges because conventional tissue biopsy can be invasive and may be difficult or unsafe for tumors located in anatomically sensitive regions.
+
+Cell-free DNA (cfDNA) obtained from plasma provides a minimally invasive substrate for cancer analysis. In addition to genomic alterations, cfDNA contains characteristic fragmentation patterns that can be quantified using whole-genome sequencing. These fragmentomic features include fragment length distributions, short-to-long fragment ratios, strand orientation, end-motif profiles, and tumor-associated measures.
+
+This project provides an automated workflow for processing cfDNA sequencing data and integrating bioinformatics preprocessing, fragmentomic feature extraction, and machine learning classification within a single Snakemake workflow.
+
+The workflow was developed to support scalable and reproducible cfDNA analysis in pediatric oncology and was evaluated for:
+
+1. Cancer detection
+2. Brain tumor detection
+3. Sarcoma detection
+4. Multiclass classification of healthy controls, brain tumors, and sarcomas
+
+The workflow is designed to improve processing efficiency, reproducibility, and scalability for large-scale cfDNA sequencing analysis.
+
+## Workflow Overview
+
+The workflow consists of five major processing stages:
+
+```text
+Raw FASTQ files
+        |
+        v
+Quality Control
+(FastQC)
+        |
+        v
+Read Alignment
+(BWA-MEM)
+        |
+        v
+BAM Processing
+(SAMtools / Picard)
+        |
+        +----------------------+
+        |                      |
+        v                      v
+CNA / Tumor Fraction      Fragmentomic Features
+(ichorCNA)                (cfdnakit + custom scripts)
+        |                      |
+        +----------+-----------+
+                   |
+                   v
+        Feature Engineering
+        and Feature Selection
+                   |
+                   v
+          Machine Learning
+                   |
+        +----------+----------+
+        |          |          |
+       KNN        SVM        RF
+                              |
+                            XGBoost
+        |          |          |
+        +----------+----------+
+                   |
+                   v
+            Hard Voting
+             Ensemble
+                   |
+                   v
+      Cancer Detection and
+       Subtype Classification
+```
+
+## Study Cohort
+
+The analytical cohort consisted of:
+
+- **349 plasma cfDNA samples**
+- **96 pediatric cancer patients**
+  - Brain tumors: 52 patients / 53 samples
+  - Sarcomas: 44 patients / 58 samples
+- **214 healthy controls**
+  - INFORM registry: 10 samples
+  - EGA datasets: 204 samples
+
+Cancer-derived samples were obtained from the INFORM registry.
+
+Healthy control samples were supplemented using publicly available datasets from the European Genome-phenome Archive (EGA).
+
+---
 
 ## Prerequisites
 
-Before starting the tutorial, make sure you have the following prerequisites installed:
+Before running the workflow, ensure that the following software and computational resources are available.
 
-- [Python](https://www.python.org/)
-- [Django](https://www.djangoproject.com/)
-- [Node.js](https://nodejs.org/)
-- [React](https://reactjs.org/)
-- [Vite](https://vitejs.dev/)
+### Operating System
 
-## Tutorial Overview
+- Ubuntu or another Linux-based operating system
+- Access to a command-line environment
 
-### 1. Introduction to Authentication
-   - Learn about the differences between cookie token-based authentication and session-based authentication.
-   - Explore security threats like Cross-Site Scripting (XSS) and Cross-Site Request Forgery (CSRF).
+### Workflow and Programming
 
-### 2. Creating a Django Backend
-   - Set up a Django backend to handle user authentication.
-   - Write the necessary code for the server-side authentication logic.
+- Conda
+- Python
+- R
+- Snakemake
 
-### 3. Scaffolding React with Vite
-   - Scaffold a React application using Vite, a lightning-fast build tool.
-   - Set up the foundation for the frontend of your application.
+### Bioinformatics Tools
 
-### 4. Styling with Bootstrap
-   - Enhance the user interface of your application using Bootstrap for sleek and responsive styling.
+The following tools are required for the cfDNA sequencing analysis workflow:
 
-### 5. Testing the Authentication System
-   - Put your session-based authentication system to the test.
-   - Explore how CSRF tokens and session IDs work.
-   - Observe how authentication behavior changes with login and logout actions.
+- FastQC
+- BWA-MEM
+- SAMtools
+- Picard
+- ichorCNA
+- cfdnakit
 
-## Key Features
+### Machine Learning and R Packages
 
-- **Session-Based Authentication**: Learn how to implement session-based authentication to enhance the security of your web applications.
+The machine learning and statistical analysis components require R and relevant R packages, including:
 
-- **Django Backend**: Set up a Django backend with user authentication functionality.
+- caret
+- randomForest
+- kernlab
+- class
+- xgboost
+- pROC
+- ggplot2
+- Biostrings
+- cfdnakit
 
-- **React Frontend**: Scaffold a React frontend using Vite, a powerful build tool for modern web development.
+### High-Performance Computing
 
-- **Bootstrap Styling**: Use Bootstrap for styling, creating a visually appealing and responsive user interface.
+For large-scale or cohort-level analysis, an HPC environment is recommended with:
 
-- **Security Considerations**: Gain insights into security threats like XSS and CSRF and how to mitigate them.
+- Slurm workload manager
+- Multi-core CPU resources
+- Sufficient RAM
+- Sufficient storage for sequencing data and intermediate files
 
-## Security Considerations
+---
 
-Security is a top priority. Ensure that you follow security best practices when implementing this authentication system. Pay special attention to:
-- [Django Security](https://docs.djangoproject.com/en/3.2/topics/security/)
-- [React Security](https://reactjs.org/docs/security.html)
+## Technologies
 
-## Contributing
+### Bioinformatics
 
-Contributions are welcome! If you find issues or have improvements to suggest, please open an issue or submit a pull request. Let's collaborate to make this tutorial even better.
+- **Snakemake** - Workflow management and automation
+- **FastQC** - Quality control of sequencing reads
+- **BWA-MEM** - Short-read alignment to the human reference genome
+- **SAMtools** - SAM/BAM processing, sorting, and indexing
+- **Picard** - BAM processing, read merging, and duplicate marking
+- **ichorCNA** - Copy-number analysis and tumor fraction estimation
+- **cfdnakit** - cfDNA fragmentomic feature extraction
+
+### Machine Learning
+
+- **R** - Statistical analysis and machine learning
+- **caret** - Model training, preprocessing, and cross-validation
+- **Random Forest** - Tree-based supervised classification
+- **Support Vector Machine (SVM)** - Supervised classification
+- **K-Nearest Neighbors (KNN)** - Instance-based classification
+- **XGBoost** - Gradient boosting classification
+- **pROC** - ROC curve and AUC analysis
+- **ggplot2** - Data visualization
+
+### Workflow and Computing Infrastructure
+
+- **Snakemake** - Reproducible workflow management
+- **Slurm** - HPC workload management and job scheduling
+- **Conda** - Environment and dependency management
+- **Linux / Ubuntu** - Computational environment
+
+### Development and Deployment
+
+- **GitHub** - Version control and source-code management
+- **MobaXterm** - Remote server access and file management
+
+---
+
+## Key Findings
+
+The workflow demonstrated:
+
+- Automated and reproducible processing of low-coverage whole-genome sequencing (lcWGS) data from plasma cfDNA.
+- Integration of sequencing quality control, read alignment, BAM processing, and copy-number analysis within a single Snakemake workflow.
+- Scalable cohort-level processing through parallel execution using Snakemake.
+- Approximately **4.4-fold reduction in total processing time** when using parallel Snakemake execution compared with sequential execution across 25 samples.
+- Integration of cfDNA fragmentomic features with supervised machine learning for pediatric cancer detection and subtype classification.
+- Evaluation of four machine learning classifiers: **K-Nearest Neighbors (KNN), Support Vector Machine (SVM), Random Forest (RF), and XGBoost**.
+- Random Forest demonstrated the strongest overall performance among the individual classifiers.
+- Hard Voting ensemble classification provided competitive performance across the evaluated classification tasks.
+- End-motif proportion features at the **3′ fragment terminus** were consistently identified as important predictors across classification tasks.
+- The workflow provides a reproducible framework for automated cfDNA fragmentomics analysis and machine learning-based pediatric cancer classification.
+
+---
+
+## Limitations
+
+The current repository version has several limitations:
+
+- The workflow currently uses **paired-end FASTQ files as the primary input format**.
+- Read alignment is performed within the workflow using BWA-MEM.
+- Pre-aligned BAM files are not currently supported as the primary input format in the released workflow.
+- Model evaluation was performed using an internal train/test framework rather than an independent external validation cohort.
+- Healthy control samples were obtained primarily from publicly available datasets generated at different sequencing depths, which may introduce potential batch or coverage-related effects.
+- The cancer cohort consisted primarily of relapsed, refractory, or progressive pediatric cancer cases.
+- The study included two major tumor categories: brain tumors and sarcomas.
+- The relatively small number of cancer samples, particularly within individual tumor subtypes, may limit the generalizability of the multiclass classification models.
+- Larger, independently collected, and prospectively matched cohorts are required to further validate model robustness and establish clinical utility.
+- The current workflow should be considered a research and computational analysis framework rather than a clinically validated diagnostic tool.
+
+---
+
+## Privacy and Data Security
+
+Certain source code files within this project cannot be shared because the project involves the collection of actual circulating cell-free DNA (cfDNA) data from patients, which constitutes sensitive personal information.
+
+---
+
+## Acknowledgement
+
+We would like to acknowledge:
+
+- The patients and families who participated in the INFORM registry.
+- The researchers and clinical teams involved in the INFORM study.
+- The Hopp Children's Cancer Center Heidelberg (KiTZ).
+- The German Cancer Research Center (DKFZ).
+- Chulabhorn Royal Academy.
+- King Mongkut's University of Technology Thonburi (KMUTT).
+- The institutions and researchers who generated and contributed the publicly available datasets used as healthy controls.
+- The developers and maintainers of the open-source bioinformatics and machine learning tools used in this project.
+
+---
 
 ## License
 
-This tutorial is open-source and is available under the [MIT License](LICENSE).
+This repository is intended for research and academic purposes.
 
-Happy coding! 🚀
+Please refer to the repository license file for the specific terms and conditions governing the use, modification, and redistribution of the source code.
+
+Patient-derived sequencing data and other sensitive clinical information are **not included in this repository**.
+
+Users are responsible for ensuring that any patient-derived genomic data used with this workflow are handled in accordance with applicable institutional policies, ethical requirements, data-use agreements, and data-protection regulations.

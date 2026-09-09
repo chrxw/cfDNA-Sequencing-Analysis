@@ -1,0 +1,7 @@
+samples_config:
+  PATIENTS: '1LB-008P-01'
+  PLASMAS: 'plasma-01'
+  SAMPLES: ['1LB-008P-01']
+  PAIRED: ['R1', 'R2']
+  directory_fastq: '/path/to/input'
+  directory_output: '/path/to/output'
