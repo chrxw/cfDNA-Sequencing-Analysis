@@ -9,6 +9,7 @@ An automated and reproducible Snakemake-based workflow for low-coverage whole-ge
 - [Study Cohort](#study-cohort)
 - [Prerequisites](#prerequisites)
 - [Technologies](#technologies)
+- [Running the Ensemble Analysis](#running-the-ensemble-analysis)
 - [Key Findings](#key-findings)
 - [Limitations](#limitations)
 - [Privacy and Data Security](#privacy-and-data-security)
@@ -189,6 +190,63 @@ For large-scale or cohort-level analysis, an HPC environment is recommended with
 
 - **GitHub** - Version control and source-code management
 - **MobaXterm** - Remote server access and file management
+
+---
+
+## Running the Ensemble Analysis
+
+The multiclass ensemble classification step is implemented in R and located in `Rscript-ENSEMBLE/`. It builds on the four pre-trained single models stored in `model/multi/` (KNN, SVM, XGBoost, and Random Forest) and classifies samples into three classes: healthy controls, brain tumors, and sarcomas. The four models are ranked by macro-averaged AUC on the test set, the top three are selected, and two ensembles are constructed from them: **Hard Voting** (majority vote, with ties resolved by the highest-AUC model) and **Soft Voting** (averaged class probabilities).
+
+### Input Data
+
+Patient-derived data are **not included in this repository**. Before running the analysis, make the required files available and point the scripts to them using environment variables:
+
+```r
+# train / validation / test splits: ML_multi_{train,val,test,encodeddf}.rds
+Sys.setenv(CFDNA_DATA_DIR = "/path/to/dataframes")
+
+# single-model reference results: ML_predictions_multi.xlsx,
+# ML_ConfusionMetrics_multi.xlsx, {knn,svm,xgb,rf}_tuned_metrics_multi_seed.rds
+Sys.setenv(CFDNA_REF_DIR = "/path/to/single_model_results")
+```
+
+Alternatively, place the files in `Rscript-ENSEMBLE/data/` and `Rscript-ENSEMBLE/data/reference/`, which are excluded from version control. If any required file is missing, the scripts stop and report exactly which files were not found.
+
+### R Packages
+
+```r
+install.packages(c(
+  "tidyverse", "caret", "pROC", "openxlsx",
+  "ggplot2", "gridExtra", "scales",
+  "randomForest", "xgboost", "e1071", "ranger", "kernlab"
+))
+```
+
+`extrafont` is optional and is used by `05_pub_figures.R` to embed Times New Roman; a serif fallback is applied when it is unavailable.
+
+### Execution
+
+Run the complete pipeline from the repository root:
+
+```bash
+Rscript Rscript-ENSEMBLE/run_all.R
+```
+
+The scripts can also be run individually, in the following order:
+
+| Script | Description |
+|---|---|
+| `01_single_model_analysis.R` | Evaluates the four single models on the train, validation, and test splits; computes accuracy, kappa, macro-AUC, macro-F1, and per-class metrics |
+| `02_ensemble_multi.R` | Selects the top three models and builds the Hard Voting and Soft Voting ensembles |
+| `03_combined_report.R` | Combines all results into a single multi-sheet Excel report |
+| `04_quick_comparison.R` | Produces a condensed five-sheet comparison report |
+| `05_pub_figures.R` | Generates publication-quality figures at web and print resolutions |
+
+Scripts `02` to `05` depend on outputs written by earlier steps, so the order must be preserved. All output is written to `Rscript-ENSEMBLE/results/`, which is excluded from version control and can be regenerated at any time.
+
+No models are re-trained during this step; the pre-trained models in `model/multi/` are loaded directly, so results are reproducible across runs.
+
+Further details are documented in [`Rscript-ENSEMBLE/README.md`](Rscript-ENSEMBLE/README.md).
 
 ---
 
