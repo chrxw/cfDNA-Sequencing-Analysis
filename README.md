@@ -11,7 +11,6 @@ An automated and reproducible Snakemake-based workflow for low-coverage whole-ge
 - [Technologies](#technologies)
 - [Key Findings](#key-findings)
 - [Limitations](#limitations)
-- [Inspiration](#inspiration)
 - [Privacy and Data Security](#privacy-and-data-security)
 - [Acknowledgement](#acknowledgement)
 - [License](#license)
@@ -154,16 +153,6 @@ For large-scale or cohort-level analysis, an HPC environment is recommended with
 - Sufficient RAM
 - Sufficient storage for sequencing data and intermediate files
 
-### Web Application
-
-If the associated web application is used, the following technologies are required:
-
-- Django
-- Node.js
-- React
-- Vite
-- PostgreSQL
-
 ---
 
 ## Technologies
@@ -196,18 +185,10 @@ If the associated web application is used, the following technologies are requir
 - **Conda** - Environment and dependency management
 - **Linux / Ubuntu** - Computational environment
 
-### Web Application
-
-- **Django** - Backend development and API services
-- **React** - Frontend user interface
-- **Vite** - Frontend development and build system
-- **PostgreSQL** - Database management
-
 ### Development and Deployment
 
 - **GitHub** - Version control and source-code management
 - **MobaXterm** - Remote server access and file management
-- **Google Cloud Platform** - Cloud computing and web application deployment
 
 ---
 
@@ -245,22 +226,9 @@ The current repository version has several limitations:
 
 ---
 
-## Inspiration
-
-The design of the web application interface was conceptually inspired by:
-
-- [Galaxy](https://usegalaxy.org/)
-- [EPI2ME](https://github.com/epi2me-labs)
-
-The interface was designed to provide a user-friendly environment for researchers and healthcare-related users who may not have extensive bioinformatics programming experience.
-
-The project combines an accessible web-based interface with a reproducible Snakemake workflow to simplify the analysis of cfDNA sequencing data while maintaining scalability and computational reproducibility.
-
----
-
 ## Privacy and Data Security
 
-Certain source code files within this project cannot be shared because the project involves the collection of actual circulating cell-free DNA (cfDNA) data from patients, which constitutes sensitive personal information. However, we can provide a comprehensive explanation of the web application's functionality based on the available source code.
+Certain source code files within this project cannot be shared because the project involves the collection of actual circulating cell-free DNA (cfDNA) data from patients, which constitutes sensitive personal information.
 
 ---
 
