@@ -19,5 +19,4 @@ names(all_feature) <- column_names
 cfdna_df <- data.frame(all_feature)
 
 # Export data to RDS file
-saveRDS(cfdna_df, file = paste0("path/to/your/output/", user_filenames, "/", 
-                                user_filenames, "_BAM.rds"))
+saveRDS(cfdna_df, file = paste0("path/to/your/RDS/file"))

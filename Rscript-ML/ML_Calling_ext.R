@@ -17,10 +17,10 @@ for (name in names(bi_datasets)) {
   
   knn_results_bi_list[[name]] <- knn_results
   
-  saveRDS(knn_results$knn_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/knn_tuned_metrics_bi_", name, "_seed.rds"))
-  saveRDS(knn_results$knn_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/knn_model_bi_", name, "_seed.rds"))
-  saveRDS(knn_results$knn_tune_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/knn_tune_model_bi_", name, "_seed.rds"))
-  saveRDS(knn_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/knn_results_bi_list_seed.rds"))
+  saveRDS(knn_results$knn_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/model/knn_tuned_metrics_bi_", name, "_seed.rds"))
+  saveRDS(knn_results$knn_model, file = paste0("cfDNA-Sequencing-Analysis/model/knn_model_bi_", name, "_seed.rds"))
+  saveRDS(knn_results$knn_tune_model, file = paste0("cfDNA-Sequencing-Analysis/model/knn_tune_model_bi_", name, "_seed.rds"))
+  saveRDS(knn_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/model/knn_results_bi_list_seed.rds"))
   
 }
 
@@ -38,10 +38,10 @@ for (name in names(bi_datasets)) {
   
   svm_results_bi_list[[name]] <- svm_results
   
-  saveRDS(svm_results$svm_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/svm_tuned_metrics_bi_", name, "_seed.rds"))
-  saveRDS(svm_results$svm_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/svm_model_bi_", name, "_seed.rds"))
-  saveRDS(svm_results$svm_tune_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/svm_tune_model_bi_", name, "_seed.rds"))
-  saveRDS(svm_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/svm_results_bi_list_seed.rds"))
+  saveRDS(svm_results$svm_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/model/svm_tuned_metrics_bi_", name, "_seed.rds"))
+  saveRDS(svm_results$svm_model, file = paste0("cfDNA-Sequencing-Analysis/model/svm_model_bi_", name, "_seed.rds"))
+  saveRDS(svm_results$svm_tune_model, file = paste0("cfDNA-Sequencing-Analysis/model/svm_tune_model_bi_", name, "_seed.rds"))
+  saveRDS(svm_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/model/svm_results_bi_list_seed.rds"))
   
 }
 
@@ -59,10 +59,10 @@ for (name in names(bi_datasets)) {
   
   xgb_results_bi_list[[name]] <- xgb_results
   
-  saveRDS(xgb_results$xgb_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/xgb_tuned_metrics_bi_", name, "_seed.rds"))
-  saveRDS(xgb_results$xgb_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/xgb_model_bi_", name, "_seed.rds"))
-  saveRDS(xgb_results$xgb_tune_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/xgb_tune_model_bi_", name, "_seed.rds"))
-  saveRDS(xgb_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/xgb_results_bi_list_seed.rds"))
+  saveRDS(xgb_results$xgb_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/model/xgb_tuned_metrics_bi_", name, "_seed.rds"))
+  saveRDS(xgb_results$xgb_model, file = paste0("cfDNA-Sequencing-Analysis/model/xgb_model_bi_", name, "_seed.rds"))
+  saveRDS(xgb_results$xgb_tune_model, file = paste0("cfDNA-Sequencing-Analysis/model/xgb_tune_model_bi_", name, "_seed.rds"))
+  saveRDS(xgb_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/model/xgb_results_bi_list_seed.rds"))
   
 }
 
@@ -80,9 +80,9 @@ for (name in names(bi_datasets)) {
   
   rf_results_bi_list[[name]] <- rf_results
   
-  saveRDS(rf_results$rf_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/rf_tuned_metrics_bi_", name, "_seed.rds"))
-  saveRDS(rf_results$rf_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/rf_model_bi_", name, "_seed.rds"))
-  saveRDS(rf_results$rf_tune_model, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/rf_tune_model_bi_", name, "_seed.rds"))
-  saveRDS(rf_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/Rscript-ML/rf_results_bi_list_seed.rds"))
+  saveRDS(rf_results$rf_tuned_metrics_df, file = paste0("cfDNA-Sequencing-Analysis/model/rf_tuned_metrics_bi_", name, "_seed.rds"))
+  saveRDS(rf_results$rf_model, file = paste0("cfDNA-Sequencing-Analysis/model/rf_model_bi_", name, "_seed.rds"))
+  saveRDS(rf_results$rf_tune_model, file = paste0("cfDNA-Sequencing-Analysis/model/rf_tune_model_bi_", name, "_seed.rds"))
+  saveRDS(rf_results_bi_list, file = paste0("cfDNA-Sequencing-Analysis/model/rf_results_bi_list_seed.rds"))
   
 }
