@@ -8,7 +8,7 @@ library(gtools)
 # Initialize an empty list to store dataframes
 dataframe_list <- list()
 
-rds_directory <- "path/to/your/raw/data"
+rds_directory <- "path/to/your/RDS/file"
 
 rds_files <- mixedsort(list.files(path = rds_directory, pattern = "\\.rds$", full.names = TRUE))
 
